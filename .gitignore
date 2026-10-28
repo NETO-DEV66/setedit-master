@@ -1,0 +1,15 @@
+.openhands/
+env.sh
+*.zip
+
+# Build output
+build/
+.gradle/
+*.apk
+*.aab
+
+# Local machine config and signing material
+local.properties
+key.properties
+*.jks
+*.keystore

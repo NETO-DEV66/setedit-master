@@ -1,0 +1,98 @@
+import com.android.build.OutputFile
+
+apply plugin: 'com.android.application'
+
+def releaseKeystoreFile = file('release.keystore')
+def hasReleaseKeystore = releaseKeystoreFile.exists()
+// Prefer CI/secret-provided values, fall back to a local key.properties, then to the
+// generated development keystore so local release builds still produce a signed APK.
+def keyProps = new Properties()
+def keyPropsFile = rootProject.file('key.properties')
+if (keyPropsFile.exists()) {
+    keyPropsFile.withInputStream { keyProps.load(it) }
+}
+def releaseStorePassword = keyProps.getProperty('storePassword') ?: System.getenv('STORE_PASSWORD') ?: 'setedit2026'
+def releaseKeyAlias = keyProps.getProperty('keyAlias') ?: System.getenv('KEY_ALIAS') ?: 'setedit'
+def releaseKeyPassword = keyProps.getProperty('keyPassword') ?: System.getenv('KEY_PASSWORD') ?: 'setedit2026'
+
+android {
+    namespace "io.github.muntashirakon.setedit"
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "io.github.muntashirakon.setedit"
+        minSdk 21
+        //noinspection ExpiredTargetSdkVersion
+        targetSdk 22
+        versionCode 10
+        versionName "3.1"
+        resConfig "en"
+    }
+
+    signingConfigs {
+        debug {
+            storeFile file('dev_keystore.jks')
+            storePassword 'kJCp!Bda#PBdN2RLK%yMK@hatq&69E'
+            keyPassword 'kJCp!Bda#PBdN2RLK%yMK@hatq&69E'
+            keyAlias 'key0'
+        }
+        release {
+            if (hasReleaseKeystore) {
+                storeFile releaseKeystoreFile
+                storePassword releaseStorePassword
+                keyAlias releaseKeyAlias
+                keyPassword releaseKeyPassword
+            }
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            path "CMakeLists.txt"
+        }
+    }
+
+    splits {
+        abi {
+            enable false
+            reset()
+            include 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
+            universalApk true
+        }
+    }
+
+    def archPrefix = ['armeabi-v7a':4, 'arm64-v8a':2, 'x86':3, 'x86_64':1]
+
+    android.applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            int abiVersionCode = archPrefix.get(output.getFilter(OutputFile.ABI), 0)
+            output.versionCodeOverride = (abiVersionCode * 100000) + defaultConfig.versionCode
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            if (hasReleaseKeystore) {
+                signingConfig signingConfigs.release
+            }
+        }
+        debug {
+            applicationIdSuffix '.debug'
+            signingConfig signingConfigs.debug
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.11.0'
+    implementation 'me.zhanghai.android.fastscroll:library:1.3.0'
+    implementation 'com.github.topjohnwu.libsu:core:5.2.2'
+}

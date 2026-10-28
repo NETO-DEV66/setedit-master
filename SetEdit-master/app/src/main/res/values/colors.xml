@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand -->
+    <color name="brand_primary">#5B4CDB</color>
+
+    <!-- Material 3 light roles -->
+    <color name="colorPrimary">#5B4CDB</color>
+    <color name="colorOnPrimary">#FFFFFF</color>
+    <color name="colorPrimaryContainer">#E5DEFF</color>
+    <color name="colorOnPrimaryContainer">#170065</color>
+
+    <color name="colorSecondary">#605D71</color>
+    <color name="colorOnSecondary">#FFFFFF</color>
+    <color name="colorSecondaryContainer">#E6E1F9</color>
+    <color name="colorOnSecondaryContainer">#1C1A2C</color>
+
+    <color name="colorTertiary">#7B4E7D</color>
+    <color name="colorOnTertiary">#FFFFFF</color>
+    <color name="colorTertiaryContainer">#FFD7F5</color>
+    <color name="colorOnTertiaryContainer">#300B35</color>
+
+    <color name="colorError">#BA1A1A</color>
+    <color name="colorOnError">#FFFFFF</color>
+    <color name="colorErrorContainer">#FFDAD6</color>
+    <color name="colorOnErrorContainer">#410002</color>
+
+    <color name="colorBackground">#FCF8FF</color>
+    <color name="colorOnBackground">#1B1B21</color>
+
+    <color name="colorSurface">#FCF8FF</color>
+    <color name="colorOnSurface">#1B1B21</color>
+    <color name="colorSurfaceVariant">#E5E0EC</color>
+    <color name="colorOnSurfaceVariant">#47464F</color>
+    <color name="colorSurfaceInverse">#303036</color>
+    <color name="colorOnSurfaceInverse">#F3EFF7</color>
+    <color name="colorSurfaceBright">#FCF8FF</color>
+    <color name="colorSurfaceDim">#DCD9E0</color>
+
+    <color name="colorOutline">#787680</color>
+    <color name="colorOutlineVariant">#C8C5D0</color>
+    <color name="colorScrim">#000000</color>
+
+    <color name="colorSurfaceContainerLowest">#FFFFFF</color>
+    <color name="colorSurfaceContainerLow">#F7F2FA</color>
+    <color name="colorSurfaceContainer">#F1ECF4</color>
+    <color name="colorSurfaceContainerHigh">#EBE6EF</color>
+    <color name="colorSurfaceContainerHighest">#E5E0E9</color>
+
+    <color name="semi_transparent">#10000000</color>
+</resources>

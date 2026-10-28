@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Spring-like overshoot easing used for bouncy entrances. -->
+<pathInterpolator xmlns:android="http://schemas.android.com/apk/res/android"
+    android:controlX1="0.34"
+    android:controlY1="1.46"
+    android:controlX2="0.64"
+    android:controlY2="1.0" />

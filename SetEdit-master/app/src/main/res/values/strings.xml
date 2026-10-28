@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">Settings Database Editor</string>
+    <string name="app_short_name" translatable="false">SetEdit</string>
+    <string name="save">Save</string>
+    <string name="error_no_support"><b>SetEdit</b> does not currently support editing this table. To enable editing, run the following command in a root or ADB shell:</string>
+    <string name="error_unexpected"><b>Unexpected failure:</b></string>
+    <string name="delete">Delete</string>
+    <string name="help">Get help</string>
+    <string name="system_table">System Table</string>
+    <string name="secure_table">Secure Table</string>
+    <string name="global_table">Global Table</string>
+    <string name="android_properties">Android Properties</string>
+    <string name="java_properties">Java Properties</string>
+    <string name="linux_environment">Linux Environments</string>
+    <string name="startup_warning"><b>Warning!</b> We do not guarantee that problems caused by the improper use of this utility can be fixed, and we are unable to help you with any such problems. We support only this app, not your device.</string>
+    <string name="save_as_json">Save as JSON</string>
+    <string name="new_item">New Item</string>
+    <string name="close">Close</string>
+    <string name="value">Value</string>
+    <string name="name">Name</string>
+    <string name="saved">Saved</string>
+    <string name="failed">Failed</string>
+    <string name="saved_to_file">Saved to %s</string>
+    <string name="theme_system">Follow system</string>
+    <string name="theme_day">Day</string>
+    <string name="theme_night">Night</string>
+    <string name="theme_battery">Follow battery saver</string>
+    <string name="theme">Theme</string>
+    <string name="boot_items">Boot Items</string>
+    <string name="perform_this_action_on_reboot">Perform this action on reboot</string>
+    <string name="shortcuts">Shortcuts</string>
+    <string name="perform_this_action_via_shortcut">Perform this action via a shortcut</string>
+    <string name="select_shortcuts">Select shortcuts</string>
+    <string name="create_new_shortcut">Create a new shortcut</string>
+    <string name="add_to_existing_shortcuts">Add to the existing shortcuts</string>
+    <string name="shortcut_icon">Icon</string>
+    <string name="pick_icon">Pick an icon</string>
+    <string name="error_creating_shortcut">Failed!</string>
+    <string name="error_creating_shortcut_description">Could not create shortcut as the launcher does not support creating pin shortcuts.</string>
+    <string name="create_shortcut">Create shortcut</string>
+    <string name="delete_shortcut_title">Delete shortcut</string>
+    <string name="delete_shortcut_message">SetEdit cannot delete a shortcut automatically. To delete the shortcut, you must remove it from the launcher where it was originally added.</string>
+    <string name="drag_item">Drag item</string>
+</resources>

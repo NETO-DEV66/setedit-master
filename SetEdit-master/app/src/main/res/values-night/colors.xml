@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="brand_primary">#C4BFFF</color>
+
+    <color name="colorPrimary">#C4BFFF</color>
+    <color name="colorOnPrimary">#2A169B</color>
+    <color name="colorPrimaryContainer">#4230B3</color>
+    <color name="colorOnPrimaryContainer">#E5DEFF</color>
+
+    <color name="colorSecondary">#CAC4DC</color>
+    <color name="colorOnSecondary">#313042</color>
+    <color name="colorSecondaryContainer">#474659</color>
+    <color name="colorOnSecondaryContainer">#E6E1F9</color>
+
+    <color name="colorTertiary">#EEB8EE</color>
+    <color name="colorOnTertiary">#482649</color>
+    <color name="colorTertiaryContainer">#613C63</color>
+    <color name="colorOnTertiaryContainer">#FFD7F5</color>
+
+    <color name="colorError">#FFB4AB</color>
+    <color name="colorOnError">#690005</color>
+    <color name="colorErrorContainer">#93000A</color>
+    <color name="colorOnErrorContainer">#FFDAD6</color>
+
+    <color name="colorBackground">#131318</color>
+    <color name="colorOnBackground">#E5E1E9</color>
+
+    <color name="colorSurface">#131318</color>
+    <color name="colorOnSurface">#E5E1E9</color>
+    <color name="colorSurfaceVariant">#47464F</color>
+    <color name="colorOnSurfaceVariant">#C8C5D0</color>
+    <color name="colorSurfaceInverse">#E5E1E9</color>
+    <color name="colorOnSurfaceInverse">#303036</color>
+    <color name="colorSurfaceBright">#39383F</color>
+    <color name="colorSurfaceDim">#131318</color>
+
+    <color name="colorOutline">#928F99</color>
+    <color name="colorOutlineVariant">#47464F</color>
+    <color name="colorScrim">#000000</color>
+
+    <color name="colorSurfaceContainerLowest">#0E0E13</color>
+    <color name="colorSurfaceContainerLow">#1B1B21</color>
+    <color name="colorSurfaceContainer">#1F1F25</color>
+    <color name="colorSurfaceContainerHigh">#2A2A30</color>
+    <color name="colorSurfaceContainerHighest">#35343B</color>
+
+    <color name="semi_transparent">#10FFFFFF</color>
+</resources>

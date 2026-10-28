@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="settings_table">
+        <item>@string/system_table</item>
+        <item>@string/secure_table</item>
+        <item>@string/global_table</item>
+        <item>@string/android_properties</item>
+        <item>@string/java_properties</item>
+        <item>@string/linux_environment</item>
+        <item>@string/boot_items</item>
+        <item>@string/shortcuts</item>
+    </string-array>
+    <string-array name="shortcut_choices">
+        <item>@string/create_new_shortcut</item>
+        <item>@string/add_to_existing_shortcuts</item>
+    </string-array>
+    <string-array name="theme_options">
+        <item>@string/theme_system</item>
+        <item>@string/theme_day</item>
+        <item>@string/theme_night</item>
+        <item>@string/theme_battery</item>
+    </string-array>
+</resources>
