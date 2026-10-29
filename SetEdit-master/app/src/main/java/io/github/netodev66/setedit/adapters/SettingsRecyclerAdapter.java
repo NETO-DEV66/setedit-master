@@ -218,23 +218,32 @@ public class SettingsRecyclerAdapter extends AbsRecyclerAdapter {
                 @Override
                 protected FilterResults performFiltering(CharSequence constraint) {
                     FilterResults results = new FilterResults();
-                    List<Integer> matchedPositions = new ArrayList<>(mCursor.getCount());
+                    Cursor cursor = mCursor;
+                    // The table is loaded off the main thread, so a filter request can arrive
+                    // before the first cursor exists (the search view reports its empty query as
+                    // soon as it is created). Report no matches instead of touching a null cursor.
+                    if (cursor == null) {
+                        results.count = 0;
+                        results.values = Collections.emptyList();
+                        return results;
+                    }
+                    List<Integer> matchedPositions = new ArrayList<>(cursor.getCount());
                     if (TextUtils.isEmpty(constraint)) {
-                        if (mCursor.moveToFirst()) {
+                        if (cursor.moveToFirst()) {
                             do {
-                                matchedPositions.add(mCursor.getPosition());
-                            } while (mCursor.moveToNext());
+                                matchedPositions.add(cursor.getPosition());
+                            } while (cursor.moveToNext());
                         }
                     } else {
                         if (!mDataValid) {
                             throw new IllegalStateException("Cannot lookup item id when cursor is in invalid state.");
                         }
-                        if (mCursor.moveToFirst()) {
+                        if (cursor.moveToFirst()) {
                             do {
-                                if (mCursor.getString(1).toLowerCase(Locale.ROOT).contains(constraint)) {
-                                    matchedPositions.add(mCursor.getPosition());
+                                if (cursor.getString(1).toLowerCase(Locale.ROOT).contains(constraint)) {
+                                    matchedPositions.add(cursor.getPosition());
                                 }
-                            } while (mCursor.moveToNext());
+                            } while (cursor.moveToNext());
                         }
                     }
                     results.count = matchedPositions.size();
@@ -244,6 +253,11 @@ public class SettingsRecyclerAdapter extends AbsRecyclerAdapter {
 
                 @Override
                 protected void publishResults(CharSequence constraint, FilterResults results) {
+                    // Filter replaces the results with an empty FilterResults when
+                    // performFiltering throws, which leaves values null.
+                    if (results == null || results.values == null) {
+                        return;
+                    }
                     //noinspection unchecked
                     AdapterUtils.notifyDataSetChanged(SettingsRecyclerAdapter.this, mMatchedPositions,
                             (List<Integer>) results.values);

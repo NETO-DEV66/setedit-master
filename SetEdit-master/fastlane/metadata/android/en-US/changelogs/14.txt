@@ -1,0 +1,10 @@
+Fix crashes on launch and at boot.
+
+* The settings table is loaded in the background. On some devices the search
+  box reported its empty query before that first load finished, and the table
+  filter read a not-yet-loaded list and crashed the app. The filter now waits
+  for the data.
+* The background refresh timer is stopped when the screen closes.
+* Android 15 and 16 no longer allow a boot receiver to start this kind of
+  foreground service, which aborted the app at boot. The boot actions now run
+  directly from the receiver.

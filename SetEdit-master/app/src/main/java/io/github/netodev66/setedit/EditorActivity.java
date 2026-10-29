@@ -69,6 +69,8 @@ public class EditorActivity extends AppCompatActivity implements AdapterView.OnI
     private AbsRecyclerAdapter adapter;
     private RecyclerView listView;
     private SharedPreferences preferences;
+    @Nullable
+    private Timer refreshTimer;
 
     /** Refreshes the visible table once Shizuku grants or revokes access. */
     private final Shizuku.OnRequestPermissionResultListener shizukuPermissionListener =
@@ -186,11 +188,16 @@ public class EditorActivity extends AppCompatActivity implements AdapterView.OnI
         UiUtils.applyWindowInsetsAsPaddingNoTop(listView);
         // Display warning if it's the first time
         displayOneTimeWarningDialog();
-        // Refresh settings after 5 seconds
-        new Timer().schedule(new TimerTask() {
+        // Poll for external settings changes. The timer is cancelled in onDestroy; until the
+        // spinner reports its first selection the adapter is still null, so skip those ticks.
+        refreshTimer = new Timer();
+        refreshTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                runOnUiThread(() -> adapter.refresh());
+                runOnUiThread(() -> {
+                    if (isFinishing() || isDestroyed() || adapter == null) return;
+                    adapter.refresh();
+                });
             }
         }, 5000, 5000);
     }
@@ -212,6 +219,15 @@ public class EditorActivity extends AppCompatActivity implements AdapterView.OnI
         } catch (Throwable ignored) {
         }
         super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (refreshTimer != null) {
+            refreshTimer.cancel();
+            refreshTimer = null;
+        }
+        super.onDestroy();
     }
 
     /**
