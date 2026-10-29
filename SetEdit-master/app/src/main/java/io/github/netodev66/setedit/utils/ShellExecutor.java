@@ -1,5 +1,6 @@
 package io.github.netodev66.setedit.utils;
 
+import android.content.Context;
 import android.os.ParcelFileDescriptor;
 
 import androidx.annotation.NonNull;
@@ -18,6 +19,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import io.github.netodev66.setedit.adb.AdbConnector;
+import io.github.netodev66.setedit.adb.AdbShell;
 import moe.shizuku.server.IRemoteProcess;
 import moe.shizuku.server.IShizukuService;
 import rikka.shizuku.Shizuku;
@@ -29,17 +32,28 @@ import rikka.shizuku.Shizuku;
  * targets a modern API the {@code SettingsProvider} blocks it from reading or writing many
  * {@code system}/{@code secure}/{@code global} keys through {@code ContentResolver}. The provider
  * exempts the shell (uid 2000) and root identities, so every settings operation is issued through
- * this executor first and only falls back to {@code ContentResolver} when neither is available.
+ * this executor first and only falls back to {@code ContentResolver} when none is available.
+ *
+ * <p>Three ways to reach that shell identity are tried, in order: root (libsu), a running Shizuku
+ * service, and the app's own ADB connection over wireless debugging.
  */
 public final class ShellExecutor {
     /** Command execution is blocking, so callers on the main thread should not use it directly. */
-    public enum Mode {ROOT, SHIZUKU, NONE}
+    public enum Mode {ROOT, SHIZUKU, ADB, NONE}
 
     public static final int EXIT_UNSUPPORTED = Integer.MIN_VALUE;
 
     private static final long SHIZUKU_TIMEOUT_SECONDS = 15L;
 
+    @Nullable
+    private static volatile Context appContext;
+
     private ShellExecutor() {
+    }
+
+    /** Stores the application context used to reach the ADB connection. */
+    public static void init(@NonNull Context context) {
+        appContext = context.getApplicationContext();
     }
 
     public static final class Result {
@@ -69,6 +83,7 @@ public final class ShellExecutor {
     public static Mode getMode() {
         if (Boolean.TRUE.equals(Shell.isAppGrantedRoot())) return Mode.ROOT;
         if (isShizukuReady()) return Mode.SHIZUKU;
+        if (isAdbReady()) return Mode.ADB;
         return Mode.NONE;
     }
 
@@ -82,6 +97,11 @@ public final class ShellExecutor {
         } catch (Throwable th) {
             return false;
         }
+    }
+
+    /** True once the app's own ADB connection is established. */
+    public static boolean isAdbReady() {
+        return AdbConnector.isConnected();
     }
 
     /** True once the Shizuku binder is present, whether or not this app has been granted access. */
@@ -100,9 +120,41 @@ public final class ShellExecutor {
                 return execRoot(command);
             case SHIZUKU:
                 return execShizuku(command);
+            case ADB:
+                return execAdb(command);
             default:
                 return new Result(Collections.emptyList(), Collections.emptyList(), EXIT_UNSUPPORTED);
         }
+    }
+
+    @NonNull
+    private static Result execAdb(@NonNull String command) {
+        Context context = appContext;
+        if (context == null) {
+            return new Result(Collections.emptyList(),
+                    Collections.singletonList("ADB context unavailable"), 1);
+        }
+        try {
+            return toResult(AdbShell.exec(context, command));
+        } catch (Throwable first) {
+            // The connection may have gone stale (adbd restarted, port changed). Reconnect once
+            // and retry so a transient drop does not silently fall back to ContentResolver.
+            if (AdbConnector.reconnect(context)) {
+                try {
+                    return toResult(AdbShell.exec(context, command));
+                } catch (Throwable second) {
+                    return new Result(Collections.emptyList(),
+                            Collections.singletonList(String.valueOf(second.getMessage())), 1);
+                }
+            }
+            return new Result(Collections.emptyList(),
+                    Collections.singletonList(String.valueOf(first.getMessage())), 1);
+        }
+    }
+
+    @NonNull
+    private static Result toResult(@NonNull AdbShell.Result result) {
+        return new Result(result.output, Collections.emptyList(), result.exitCode);
     }
 
     @NonNull

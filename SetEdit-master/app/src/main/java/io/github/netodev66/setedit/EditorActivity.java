@@ -1,5 +1,6 @@
 package io.github.netodev66.setedit;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -44,6 +45,8 @@ import java.util.TimerTask;
 import io.github.netodev66.setedit.adapters.AbsRecyclerAdapter;
 import io.github.netodev66.setedit.adapters.AdapterProvider;
 import io.github.netodev66.setedit.adapters.SettingsRecyclerAdapter;
+import io.github.netodev66.setedit.adb.AdbConnector;
+import io.github.netodev66.setedit.adb.ConnectActivity;
 import io.github.netodev66.setedit.boot.ActionItem;
 import io.github.netodev66.setedit.boot.BootUtils;
 import io.github.netodev66.setedit.shortcut.ShortcutUtils;
@@ -56,6 +59,7 @@ import rikka.shizuku.Shizuku;
 public class EditorActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener,
         SearchView.OnQueryTextListener {
     private static final String SELECTED_TABLE = "SELECTED_TABLE";
+    private static final String CONNECT_PROMPT_SHOWN = "connect_prompt_shown";
     private static final int SHIZUKU_PERMISSION_REQUEST_CODE = 1001;
 
     @NonNull
@@ -71,6 +75,13 @@ public class EditorActivity extends AppCompatActivity implements AdapterView.OnI
     private SharedPreferences preferences;
     @Nullable
     private Timer refreshTimer;
+
+    /** Opens the wireless-debugging connect screen and refreshes once it succeeds. */
+    private final ActivityResultLauncher<Intent> connectLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK && adapter != null) adapter.refresh();
+            });
 
     /** Refreshes the visible table once Shizuku grants or revokes access. */
     private final Shizuku.OnRequestPermissionResultListener shizukuPermissionListener =
@@ -188,6 +199,9 @@ public class EditorActivity extends AppCompatActivity implements AdapterView.OnI
         UiUtils.applyWindowInsetsAsPaddingNoTop(listView);
         // Display warning if it's the first time
         displayOneTimeWarningDialog();
+        // Offer the one-time wireless-debugging connection on the first launch, and reconnect
+        // silently afterwards if a key was already paired.
+        maybeConnect();
         // Poll for external settings changes. The timer is cancelled in onDestroy; until the
         // spinner reports its first selection the adapter is still null, so skip those ticks.
         refreshTimer = new Timer();
@@ -200,6 +214,35 @@ public class EditorActivity extends AppCompatActivity implements AdapterView.OnI
                 });
             }
         }, 5000, 5000);
+    }
+
+    /**
+     * Makes sure a privileged shell is on its way.
+     *
+     * <p>Root and Shizuku need nothing from the user. Otherwise the app's own ADB connection is
+     * attempted in the background; when it needs pairing and the user has not been asked yet, the
+     * connect screen is opened. The prompt is shown at most once so a device without wireless
+     * debugging does not nag on every launch.
+     */
+    private void maybeConnect() {
+        if (ShellExecutor.isAvailable()) return;
+        AdbConnector.runAsync(() -> {
+            AdbConnector.State state = AdbConnector.connect(getApplicationContext());
+            runOnUiThread(() -> {
+                if (isFinishing() || isDestroyed()) return;
+                if (state == AdbConnector.State.CONNECTED) {
+                    if (adapter != null) adapter.refresh();
+                    return;
+                }
+                if (preferences.getBoolean(CONNECT_PROMPT_SHOWN, false)) return;
+                preferences.edit().putBoolean(CONNECT_PROMPT_SHOWN, true).apply();
+                openConnectScreen();
+            });
+        });
+    }
+
+    private void openConnectScreen() {
+        connectLauncher.launch(new Intent(this, ConnectActivity.class));
     }
 
     @Override
@@ -231,32 +274,35 @@ public class EditorActivity extends AppCompatActivity implements AdapterView.OnI
     }
 
     /**
-     * Explains the privileged-access requirement and, when Shizuku is running, asks it for
-     * permission. Root needs no prompt and is used automatically.
+     * Explains the privileged-access requirement and offers the available way to get it: root and
+     * Shizuku are used automatically, otherwise the user is taken to the wireless-debugging screen.
      */
     private void showPrivilegedAccessDialog() {
         ShellExecutor.Mode mode = ShellExecutor.getMode();
         String status;
-        boolean canRequest;
+        boolean canRequestShizuku = false;
+        boolean canConnect = false;
         if (mode == ShellExecutor.Mode.ROOT) {
             status = getString(R.string.privileged_access_root);
-            canRequest = false;
         } else if (mode == ShellExecutor.Mode.SHIZUKU) {
             status = getString(R.string.privileged_access_shizuku_ready);
-            canRequest = false;
+        } else if (mode == ShellExecutor.Mode.ADB) {
+            status = getString(R.string.privileged_access_adb_ready);
         } else if (ShellExecutor.isShizukuBinderAvailable()) {
             status = getString(R.string.privileged_access_shizuku_installed);
-            canRequest = true;
+            canRequestShizuku = true;
         } else {
             status = getString(R.string.privileged_access_shizuku_missing);
-            canRequest = false;
+            canConnect = true;
         }
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.privileged_access_title)
                 .setMessage(status + "\n\n" + getString(R.string.privileged_access_message))
                 .setNegativeButton(R.string.close, null);
-        if (canRequest) {
+        if (canRequestShizuku) {
             builder.setPositiveButton(R.string.grant, (dialog, which) -> requestShizukuPermission());
+        } else if (canConnect) {
+            builder.setPositiveButton(R.string.connect_button, (dialog, which) -> openConnectScreen());
         }
         builder.show();
     }

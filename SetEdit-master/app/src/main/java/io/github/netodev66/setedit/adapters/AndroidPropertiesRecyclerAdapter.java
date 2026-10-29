@@ -13,6 +13,8 @@ import com.topjohnwu.superuser.Shell;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import io.github.netodev66.setedit.Native;
 import io.github.netodev66.setedit.R;
@@ -21,6 +23,12 @@ import io.github.netodev66.setedit.utils.ActionResult;
 import io.github.netodev66.setedit.utils.AndroidPropertyUtils;
 
 class AndroidPropertiesRecyclerAdapter extends AbsRecyclerAdapter {
+    private static final ExecutorService WRITE_EXECUTOR = Executors.newSingleThreadExecutor(runnable -> {
+        Thread thread = new Thread(runnable, "setedit-property-write");
+        thread.setDaemon(true);
+        return thread;
+    });
+
     private final List<String[]> propertyList = new ArrayList<>();
     private final List<Integer> matchedIndexes = new ArrayList<>();
     private Filter filter;
@@ -69,14 +77,19 @@ class AndroidPropertiesRecyclerAdapter extends AbsRecyclerAdapter {
 
     @Override
     public void update(String keyName, String newValue) {
-        ActionResult result = AndroidPropertyUtils.update(keyName, newValue);
-        if (result.successful) {
-            refresh();
-        } else {
-            setMessage(new SpannableStringBuilder(context.getText(R.string.error_unexpected))
-                    .append(" ")
-                    .append(result.getLogs()));
-        }
+        // Writing a property goes through the privileged shell, which must not run on the UI thread.
+        WRITE_EXECUTOR.submit(() -> {
+            ActionResult result = AndroidPropertyUtils.update(keyName, newValue);
+            context.runOnUiThread(() -> {
+                if (result.successful) {
+                    refresh();
+                } else {
+                    setMessage(new SpannableStringBuilder(context.getText(R.string.error_unexpected))
+                            .append(" ")
+                            .append(result.getLogs()));
+                }
+            });
+        });
     }
 
     @Override

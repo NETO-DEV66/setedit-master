@@ -37,6 +37,16 @@ public class SettingsRecyclerAdapter extends AbsRecyclerAdapter {
         return thread;
     });
 
+    /**
+     * Writes run here, not on the UI thread. The ADB transport is a raw socket, which the platform
+     * forbids on the main thread, and a root/Shizuku write also blocks on a process.
+     */
+    private static final ExecutorService WRITE_EXECUTOR = Executors.newSingleThreadExecutor(runnable -> {
+        Thread thread = new Thread(runnable, "setedit-settings-write");
+        thread.setDaemon(true);
+        return thread;
+    });
+
     @SettingsType
     private final String mSettingsType;
     private final List<Integer> mMatchedPositions;
@@ -128,38 +138,38 @@ public class SettingsRecyclerAdapter extends AbsRecyclerAdapter {
 
     @Override
     public void create(String keyName, String newValue) {
-        ActionResult result = SettingsUtils.create(context, mSettingsType, keyName, newValue);
-        if (result.successful) {
-            refresh();
-        } else {
-            setMessage(new SpannableStringBuilder(context.getText(R.string.error_unexpected))
-                    .append(" ")
-                    .append(result.getLogs()));
-        }
+        WRITE_EXECUTOR.submit(() -> {
+            ActionResult result = SettingsUtils.create(context, mSettingsType, keyName, newValue);
+            postResult(result);
+        });
     }
 
     @Override
     public void update(String keyName, String newValue) {
-        ActionResult result = SettingsUtils.update(context, mSettingsType, keyName, newValue);
-        if (result.successful) {
-            refresh();
-        } else {
-            setMessage(new SpannableStringBuilder(context.getText(R.string.error_unexpected))
-                    .append(" ")
-                    .append(result.getLogs()));
-        }
+        WRITE_EXECUTOR.submit(() -> {
+            ActionResult result = SettingsUtils.update(context, mSettingsType, keyName, newValue);
+            postResult(result);
+        });
     }
 
     @Override
     public void delete(String keyName) {
-        ActionResult result = SettingsUtils.delete(context, mSettingsType, keyName);
-        if (result.successful) {
-            refresh();
-        } else {
-            setMessage(new SpannableStringBuilder(context.getText(R.string.error_unexpected))
-                    .append(" ")
-                    .append(result.getLogs()));
-        }
+        WRITE_EXECUTOR.submit(() -> {
+            ActionResult result = SettingsUtils.delete(context, mSettingsType, keyName);
+            postResult(result);
+        });
+    }
+
+    private void postResult(@NonNull ActionResult result) {
+        context.runOnUiThread(() -> {
+            if (result.successful) {
+                refresh();
+            } else {
+                setMessage(new SpannableStringBuilder(context.getText(R.string.error_unexpected))
+                        .append(" ")
+                        .append(result.getLogs()));
+            }
+        });
     }
 
     @Override

@@ -44,12 +44,32 @@
     <string name="drag_item">Drag item</string>
     <string name="grant_privileged_access">Grant privileged access</string>
     <string name="privileged_access_title">Privileged access</string>
-    <string name="privileged_access_message">Android 15 and later hide most system, secure and global settings from regular apps. SetEdit needs either root or Shizuku to read and write them. Root is used automatically when available; otherwise install and start Shizuku, then grant SetEdit access.</string>
+    <string name="privileged_access_message">Android 15 and later hide most system, secure and global settings from regular apps. SetEdit needs the shell identity to read and write them. Root is used automatically when available; otherwise connect over wireless debugging once and SetEdit remembers it.</string>
     <string name="privileged_access_root">Root access is active.</string>
     <string name="privileged_access_shizuku_ready">Shizuku access is active.</string>
     <string name="privileged_access_shizuku_installed">Shizuku is running. Tap Grant to allow SetEdit to use it.</string>
-    <string name="privileged_access_shizuku_missing">Shizuku is not running. Install and start Shizuku, or grant root, to edit settings on Android 15 and later.</string>
+    <string name="privileged_access_shizuku_missing">Shizuku is not running. Connect over wireless debugging, or grant root, to edit settings on Android 15 and later.</string>
+    <string name="privileged_access_adb_ready">Wireless debugging is connected.</string>
     <string name="grant">Grant</string>
     <string name="privileged_access_granted">Privileged access granted.</string>
     <string name="privileged_access_denied">Privileged access was denied.</string>
+
+    <!-- Wireless debugging connection -->
+    <string name="connect_title">Connect to this device</string>
+    <string name="connect_intro">SetEdit can use this device\'s own ADB (wireless debugging) to edit every settings table — no root and no extra app. You only need to connect once.</string>
+    <string name="connect_steps">1. Open Developer options and turn on Wireless debugging.\n2. Tap “Pair device with pairing code”.\n3. Keep that dialog open and tap Connect below.</string>
+    <string name="connect_button">Connect</string>
+    <string name="connect_later">Not now</string>
+    <string name="connect_pairing_code_label">Pairing code</string>
+    <string name="connect_pairing_code_hint">6-digit code</string>
+    <string name="connect_searching">Looking for the pairing service…</string>
+    <string name="connect_pairing">Pairing…</string>
+    <string name="connect_connecting">Connecting…</string>
+    <string name="connect_connected">Connected. SetEdit will remember this device.</string>
+    <string name="connect_failed">Could not connect.</string>
+    <string name="connect_pairing_service_missing">Pairing service not found. Make sure the “Pair device with pairing code” dialog is open and both devices are on the same network.</string>
+    <string name="connect_pairing_failed">Pairing failed. Check the pairing code and try again.</string>
+    <string name="connect_wireless_debugging_off">Wireless debugging is off. Turn it on in Developer options, then try again.</string>
+    <string name="connect_retry">Try again</string>
+    <string name="connected_status">Wireless debugging connected</string>
 </resources>

@@ -12,6 +12,8 @@ import androidx.core.view.WindowCompat;
 import com.google.android.material.color.DynamicColors;
 import com.topjohnwu.superuser.Shell;
 
+import io.github.netodev66.setedit.utils.ShellExecutor;
+
 public class App extends Application {
     static {
         // Set settings before the main shell can be created
@@ -24,6 +26,7 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        ShellExecutor.init(this);
         DynamicColors.applyToActivitiesIfAvailable(this);
         registerActivityLifecycleCallbacks(new ActivityAppearanceCallback());
         Shell.getShell();
