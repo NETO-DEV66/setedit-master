@@ -1,13 +1,19 @@
 package io.github.netodev66.setedit.adb;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
@@ -21,6 +27,9 @@ import io.github.netodev66.setedit.R;
  * <p>The user turns on wireless debugging, opens the "Pair device with pairing code" dialog, types
  * the code shown there, and taps Connect. SetEdit discovers the pairing service over mDNS, pairs,
  * then connects; from then on the key is remembered and this screen never asks again.
+ *
+ * <p>The code can also be typed straight from a notification's inline-reply field, so the user does
+ * not have to switch back and forth between the wireless-debugging dialog and this screen.
  */
 public class ConnectActivity extends AppCompatActivity {
     @Nullable
@@ -31,6 +40,10 @@ public class ConnectActivity extends AppCompatActivity {
     private EditText pairingCode;
     @Nullable
     private MaterialButton connectButton;
+
+    private final ActivityResultLauncher<String> notificationPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(),
+                    granted -> AdbPairingNotification.show(this));
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -45,19 +58,47 @@ public class ConnectActivity extends AppCompatActivity {
         pairingCode = findViewById(R.id.pairing_code);
         connectButton = findViewById(R.id.connect_button);
         MaterialButton skipButton = findViewById(R.id.skip_button);
+        MaterialButton notifyButton = findViewById(R.id.notify_button);
 
         connectButton.setOnClickListener(v -> startPairing());
         skipButton.setOnClickListener(v -> finish());
+        if (notifyButton != null) {
+            notifyButton.setOnClickListener(v -> showPairingNotification());
+        }
         animateIn(findViewById(R.id.pairing_code_layout));
 
         // Try a silent connection first: if this device already trusts the app (paired before, or
-        // authorised another way) it connects without asking for anything.
+        // authorised another way) it connects without asking for anything. The pairing notification
+        // is posted only when that silent attempt shows a code is actually needed.
         setStatus(R.string.connect_connecting);
         setBusy(true);
         AdbConnector.runAsync(() -> {
             AdbConnector.State state = AdbConnector.connect(this);
             runOnUiThread(() -> onConnectResult(state, false));
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // The code may have been entered from the notification while this screen was in the
+        // background; reflect that so the screen does not keep asking.
+        if (AdbConnector.isConnected()) {
+            AdbPairingNotification.cancel(this);
+            setResult(RESULT_OK);
+            finish();
+        }
+    }
+
+    /** Posts the pairing notification, asking for the notification permission first on Android 13+. */
+    private void showPairingNotification() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+                && ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED) {
+            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+            return;
+        }
+        AdbPairingNotification.show(this);
     }
 
     private void startPairing() {
@@ -77,6 +118,7 @@ public class ConnectActivity extends AppCompatActivity {
     private void onConnectResult(@NonNull AdbConnector.State state, boolean wasPairing) {
         setBusy(false);
         if (state == AdbConnector.State.CONNECTED) {
+            AdbPairingNotification.cancel(this);
             setStatus(R.string.connect_connected);
             connectButton.setText(R.string.connected_status);
             connectButton.setEnabled(false);
@@ -89,8 +131,15 @@ public class ConnectActivity extends AppCompatActivity {
         connectButton.setText(R.string.connect_retry);
         if (wasPairing) {
             setStatus(R.string.connect_pairing_failed);
+            showPairingNotification();
+        } else if (state == AdbConnector.State.NEEDS_PAIRING) {
+            // The device knows wireless debugging but does not trust this app yet: this is the
+            // moment a pairing code is required, so offer the code entry in a notification as well
+            // as in this screen.
+            showPairingCode();
+            setStatus(R.string.privileged_access_message);
+            showPairingNotification();
         } else {
-            // The stored key no longer works, so ask for a fresh pairing code.
             showPairingCode();
             setStatus(R.string.connect_wireless_debugging_off);
         }

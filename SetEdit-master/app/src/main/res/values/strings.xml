@@ -72,4 +72,13 @@
     <string name="connect_wireless_debugging_off">Wireless debugging is off. Turn it on in Developer options, then try again.</string>
     <string name="connect_retry">Try again</string>
     <string name="connected_status">Wireless debugging connected</string>
+
+    <!-- Wireless debugging pairing notification -->
+    <string name="pairing_channel_name">Wireless debugging pairing</string>
+    <string name="pairing_channel_description">Lets you type the pairing code straight from the notification.</string>
+    <string name="pairing_notification_title">Enter the pairing code</string>
+    <string name="pairing_notification_text">Type the 6-digit code shown in Developer options → Wireless debugging. It is entered without opening SetEdit.</string>
+    <string name="pairing_notification_action">Enter code</string>
+    <string name="pairing_notification_wait">Pairing…</string>
+    <string name="connect_use_notification">Enter the code from the notification</string>
 </resources>

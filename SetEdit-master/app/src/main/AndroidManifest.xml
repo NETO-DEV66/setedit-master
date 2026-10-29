@@ -14,6 +14,8 @@
     <!-- The app talks to this device's own ADB daemon over a local socket. -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- The pairing code can be typed straight from a notification (Android 13+). -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
@@ -68,6 +70,11 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+
+        <!-- Receives the pairing code typed into the notification's inline reply. -->
+        <receiver
+            android:name=".adb.AdbPairingReceiver"
+            android:exported="false" />
 
         <!-- Shizuku hands the app the shell identity so it can edit settings on Android 15+.
              The subclass disables Sui auto-init (root is already available via libsu) and keeps

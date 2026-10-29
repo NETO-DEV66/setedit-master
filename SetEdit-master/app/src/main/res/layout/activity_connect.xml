@@ -113,6 +113,14 @@
                 android:layout_marginTop="4dp"
                 android:text="@string/connect_later" />
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/notify_button"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/connect_use_notification" />
+
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
