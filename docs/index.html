@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SetEdit — Settings Database Editor</title>
+<meta name="description" content="SetEdit lets you view and edit Android system settings directly. Material 3 redesign, smooth animations, and a modern icon." />
+<link rel="icon" href="assets/icon.png" />
+<link rel="apple-touch-icon" href="assets/icon-180.png" />
+<style>
+  :root {
+    --primary: #5B4CDB;
+    --on-primary: #ffffff;
+    --primary-container: #E5DEFF;
+    --on-primary-container: #170065;
+    --bg: #FCF8FF;
+    --on-bg: #1B1B21;
+    --surface: #FFFFFF;
+    --surface-variant: #F1ECF4;
+    --on-surface-variant: #47464F;
+    --outline: #C8C5D0;
+    --radius: 20px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --primary: #C4BFFF;
+      --on-primary: #2A169B;
+      --primary-container: #4230B3;
+      --on-primary-container: #E5DEFF;
+      --bg: #131318;
+      --on-bg: #E5E1E9;
+      --surface: #1F1F25;
+      --surface-variant: #2A2A30;
+      --on-surface-variant: #C8C5D0;
+      --outline: #47464F;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: "Roboto", system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--on-bg);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 0 20px; }
+
+  header.hero {
+    padding: 72px 0 56px;
+    text-align: center;
+    animation: rise .6s cubic-bezier(.34,1.46,.64,1) both;
+  }
+  .appicon {
+    width: 108px; height: 108px;
+    border-radius: 26px;
+    background: var(--primary);
+    display: grid; place-items: center;
+    margin: 0 auto 20px;
+    animation: pop .7s cubic-bezier(.34,1.46,.64,1) both;
+  }
+  .appicon svg { width: 64px; height: 64px; }
+  h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 8px; letter-spacing: -.02em; }
+  .tagline { font-size: 1.125rem; color: var(--on-surface-variant); margin: 0 auto 28px; max-width: 34ch; }
+
+  .cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 14px 26px;
+    border-radius: 100px;
+    font-weight: 600; font-size: 1rem;
+    text-decoration: none;
+    transition: transform .18s cubic-bezier(.34,1.46,.64,1), filter .18s ease;
+  }
+  .btn:active { transform: scale(.96); }
+  .btn.primary { background: var(--primary); color: var(--on-primary); }
+  .btn.primary:hover { filter: brightness(1.08); transform: translateY(-2px); }
+  .btn.tonal { background: var(--primary-container); color: var(--on-primary-container); }
+  .btn.tonal:hover { transform: translateY(-2px); }
+  .meta { font-size: .8125rem; color: var(--on-surface-variant); margin-top: 14px; }
+
+  section { padding: 40px 0; }
+  h2 { font-size: 1.5rem; margin: 0 0 20px; letter-spacing: -.01em; }
+
+  .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 22px;
+    animation: rise .6s cubic-bezier(.34,1.46,.64,1) both;
+  }
+  .card:nth-child(2) { animation-delay: .06s; }
+  .card:nth-child(3) { animation-delay: .12s; }
+  .card:nth-child(4) { animation-delay: .18s; }
+  .card h3 { margin: 0 0 6px; font-size: 1.0625rem; }
+  .card p { margin: 0; color: var(--on-surface-variant); font-size: .9375rem; }
+  .chip {
+    display: inline-grid; place-items: center;
+    width: 40px; height: 40px; border-radius: 12px;
+    background: var(--primary-container); color: var(--on-primary-container);
+    margin-bottom: 12px;
+  }
+
+  .shots { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+  .shot {
+    background: var(--surface-variant);
+    border-radius: var(--radius);
+    aspect-ratio: 9 / 16;
+    display: grid; place-items: center;
+    color: var(--on-surface-variant);
+    font-size: .875rem;
+    text-align: center;
+    padding: 20px;
+  }
+
+  pre {
+    background: var(--surface-variant);
+    border-radius: 14px;
+    padding: 16px 18px;
+    overflow-x: auto;
+    font-size: .875rem;
+  }
+  code { font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+
+  footer {
+    padding: 40px 0 56px;
+    border-top: 1px solid var(--outline);
+    color: var(--on-surface-variant);
+    font-size: .875rem;
+    text-align: center;
+  }
+  footer a { color: var(--primary); }
+
+  @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+  @keyframes pop { from { opacity: 0; transform: scale(.8); } to { opacity: 1; transform: scale(1); } }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero wrap">
+  <div class="appicon" aria-hidden="true">
+    <svg viewBox="0 0 108 108" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <g stroke="#fff" stroke-width="5" stroke-linecap="round">
+        <line x1="32" y1="38" x2="76" y2="38"/>
+        <line x1="32" y1="54" x2="76" y2="54"/>
+        <line x1="32" y1="70" x2="76" y2="70"/>
+      </g>
+      <circle cx="46" cy="38" r="7.5" fill="#fff"/>
+      <circle cx="64" cy="54" r="7.5" fill="#fff"/>
+      <circle cx="40" cy="70" r="7.5" fill="#fff"/>
+    </svg>
+  </div>
+  <h1>SetEdit</h1>
+  <p class="tagline">View and edit Android system settings directly — with a fresh Material 3 look.</p>
+  <div class="cta">
+    <a class="btn primary" href="https://github.com/NETO-DEV66/setedit-master/releases/latest/download/SetEdit-3.1-release.apk">
+      Download APK
+    </a>
+    <a class="btn tonal" href="https://github.com/NETO-DEV66/setedit-master">View on GitHub</a>
+  </div>
+  <p class="meta">v3.1 · Android 5.0+ · Signed release · ~1.8 MB</p>
+</header>
+
+<main class="wrap">
+
+  <section>
+    <h2>What's new in v3.1</h2>
+    <div class="grid">
+      <div class="card">
+        <div class="chip">🎨</div>
+        <h3>Material 3 redesign</h3>
+        <p>A complete colour-role palette for light and dark, tonal cards, and edge-to-edge system bars.</p>
+      </div>
+      <div class="card">
+        <div class="chip">✨</div>
+        <h3>Bouncy animations</h3>
+        <p>Spring-based entrances for list rows, press feedback that settles with a bounce, and smooth dialog pops.</p>
+      </div>
+      <div class="card">
+        <div class="chip">🖼️</div>
+        <h3>New app icon</h3>
+        <p>A crisp sliders mark as an adaptive icon, with monochrome support and a refreshed TV banner.</p>
+      </div>
+      <div class="card">
+        <div class="chip">⚡</div>
+        <h3>Lean build</h3>
+        <p>R8 and resource shrinking keep the signed release APK small and quick to start.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Screens</h2>
+    <div class="shots">
+      <div class="shot">Editor list<br/>with card rows</div>
+      <div class="shot">Edit dialog<br/>with spring pop</div>
+      <div class="shot">Dark theme<br/>full palette</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Install</h2>
+    <p>Download the APK and open it on your device. You may need to allow installs from your browser or file manager.</p>
+    <pre><code># Verify the download
+sha256sum SetEdit-3.1-release.apk
+# 3293fd3a8acefbfe5173f314751db3b1c261df545cfbf513784746091a479e37</code></pre>
+  </section>
+
+</main>
+
+<footer>
+  <p>SetEdit · Package <code>io.github.muntashirakon.setedit</code></p>
+  <p><a href="https://github.com/NETO-DEV66/setedit-master/releases">All releases</a> · <a href="https://github.com/NETO-DEV66/setedit-master/issues">Report an issue</a></p>
+</footer>
+
+</body>
+</html>
