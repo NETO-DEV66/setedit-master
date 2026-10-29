@@ -3,7 +3,7 @@
 A modern, Material 3 Settings Database Editor for Android.
 
 > Looking for the latest build? See the [project README](../README.md) or grab the
-> signed APK from the [latest release](https://github.com/NETO-DEV66/setedit-master/releases/latest/download/SetEdit-3.2-release.apk).
+> signed APK from the [latest release](https://github.com/NETO-DEV66/setedit-master/releases/latest/download/SetEdit-3.3-release.apk).
 
 [<img src="https://img.shields.io/badge/license-GPLv3-5B4CDB" alt="GPLv3" height="28" />](LICENSE)
 
@@ -19,21 +19,22 @@ Both `WRITE_SETTINGS` and `WRITE_SECURE_SETTINGS` permissions are optional if yo
 
 ### Android 14 and Up
 
-This app needs to target API 22 because API 23 (Android M) onwards do not allow it to modify some setting items without elevated permissions such as root or ADB.
-In Android 14 onwards, a new restriction has been added that prevents an app targeting API 22 or earlier to be installed without elevated permission.
-You can install the application from an ADB shell using the following command:
+SetEdit targets API 34, so it installs and launches normally on Android 14 and newer
+without any bypass flags.
 
-```shell
-adb install --bypass-low-target-sdk-block SetEdit.apk
-```
+Starting with Android 15, the platform also hides most `system`, `secure` and
+`global` keys from apps that target a modern API and rejects many writes. SetEdit
+reads and writes these tables through a **privileged shell** so every table stays
+editable:
 
-Or, from a rooted shell:
+- **Root** is used automatically when the device is rooted.
+- **Shizuku** works on non-rooted devices: install and start
+  [Shizuku](https://shizuku.rikka.app/), then open SetEdit's overflow menu →
+  **Grant privileged access** → **Grant**.
 
-```shell
-pm install --bypass-low-target-sdk-block SetEdit.apk
-```
-
-(Replace `SetEdit.apk` with the actual file name or location.)
+Both routes run `settings get/put/delete` as the shell user (uid 2000), which the
+`SettingsProvider` exempts from its target-SDK checks — the same behaviour as
+`adb shell settings`.
 
 ### License
 

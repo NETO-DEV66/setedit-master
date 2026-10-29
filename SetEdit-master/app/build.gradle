@@ -21,11 +21,11 @@ android {
 
     defaultConfig {
         applicationId "io.github.netodev66.setedit"
-        minSdk 21
-        //noinspection ExpiredTargetSdkVersion
-        targetSdk 22
-        versionCode 11
-        versionName "3.2"
+        // Shizuku API requires API 24; Android 15+ refuses to install anything targeting < 24.
+        minSdk 24
+        targetSdk 34
+        versionCode 12
+        versionName "3.3"
         resConfig "en"
     }
 
@@ -91,8 +91,13 @@ android {
 }
 
 dependencies {
+    implementation 'androidx.core:core:1.13.1'
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.11.0'
     implementation 'me.zhanghai.android.fastscroll:library:1.3.0'
     implementation 'com.github.topjohnwu.libsu:core:5.2.2'
+    // Shizuku lets non-rooted devices grant the shell identity (uid 2000), which the
+    // SettingsProvider exempts from its targetSdk-based read/write restrictions.
+    implementation 'dev.rikka.shizuku:api:13.1.5'
+    implementation 'dev.rikka.shizuku:provider:13.1.5'
 }

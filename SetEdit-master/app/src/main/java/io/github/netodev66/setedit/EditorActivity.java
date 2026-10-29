@@ -1,6 +1,7 @@
 package io.github.netodev66.setedit;
 
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -47,12 +48,15 @@ import io.github.netodev66.setedit.boot.ActionItem;
 import io.github.netodev66.setedit.boot.BootUtils;
 import io.github.netodev66.setedit.shortcut.ShortcutUtils;
 import io.github.netodev66.setedit.utils.ActionResult;
+import io.github.netodev66.setedit.utils.ShellExecutor;
 import io.github.netodev66.util.UiUtils;
 import me.zhanghai.android.fastscroll.FastScrollerBuilder;
+import rikka.shizuku.Shizuku;
 
 public class EditorActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener,
         SearchView.OnQueryTextListener {
     private static final String SELECTED_TABLE = "SELECTED_TABLE";
+    private static final int SHIZUKU_PERMISSION_REQUEST_CODE = 1001;
 
     @NonNull
     private final AdapterProvider adapterProvider = new AdapterProvider(this);
@@ -65,6 +69,18 @@ public class EditorActivity extends AppCompatActivity implements AdapterView.OnI
     private AbsRecyclerAdapter adapter;
     private RecyclerView listView;
     private SharedPreferences preferences;
+
+    /** Refreshes the visible table once Shizuku grants or revokes access. */
+    private final Shizuku.OnRequestPermissionResultListener shizukuPermissionListener =
+            (requestCode, grantResult) -> {
+                if (requestCode != SHIZUKU_PERMISSION_REQUEST_CODE) return;
+                if (grantResult == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this, R.string.privileged_access_granted, Toast.LENGTH_SHORT).show();
+                    if (adapter != null) adapter.refresh();
+                } else {
+                    Toast.makeText(this, R.string.privileged_access_denied, Toast.LENGTH_SHORT).show();
+                }
+            };
 
     private final ActivityResultLauncher<String> post21SaveLauncher = registerForActivityResult(
             new ActivityResultContracts.CreateDocument("application/json"),
@@ -153,6 +169,10 @@ public class EditorActivity extends AppCompatActivity implements AdapterView.OnI
         addNewItem = findViewById(R.id.efab);
         addNewItem.setOnClickListener(v -> {
             if (adapter instanceof SettingsRecyclerAdapter) {
+                if (ShellExecutor.isAvailable()) {
+                    addNewItemDialog();
+                    return;
+                }
                 Boolean isGranted = EditorUtils.checkSettingsPermission(this, ((SettingsRecyclerAdapter) adapter).getSettingsType());
                 if (isGranted == null) return;
                 if (isGranted) {
@@ -173,6 +193,64 @@ public class EditorActivity extends AppCompatActivity implements AdapterView.OnI
                 runOnUiThread(() -> adapter.refresh());
             }
         }, 5000, 5000);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        try {
+            Shizuku.addRequestPermissionResultListener(shizukuPermissionListener);
+        } catch (Throwable ignored) {
+        }
+        if (adapter != null) adapter.refresh();
+    }
+
+    @Override
+    protected void onPause() {
+        try {
+            Shizuku.removeRequestPermissionResultListener(shizukuPermissionListener);
+        } catch (Throwable ignored) {
+        }
+        super.onPause();
+    }
+
+    /**
+     * Explains the privileged-access requirement and, when Shizuku is running, asks it for
+     * permission. Root needs no prompt and is used automatically.
+     */
+    private void showPrivilegedAccessDialog() {
+        ShellExecutor.Mode mode = ShellExecutor.getMode();
+        String status;
+        boolean canRequest;
+        if (mode == ShellExecutor.Mode.ROOT) {
+            status = getString(R.string.privileged_access_root);
+            canRequest = false;
+        } else if (mode == ShellExecutor.Mode.SHIZUKU) {
+            status = getString(R.string.privileged_access_shizuku_ready);
+            canRequest = false;
+        } else if (ShellExecutor.isShizukuBinderAvailable()) {
+            status = getString(R.string.privileged_access_shizuku_installed);
+            canRequest = true;
+        } else {
+            status = getString(R.string.privileged_access_shizuku_missing);
+            canRequest = false;
+        }
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.privileged_access_title)
+                .setMessage(status + "\n\n" + getString(R.string.privileged_access_message))
+                .setNegativeButton(R.string.close, null);
+        if (canRequest) {
+            builder.setPositiveButton(R.string.grant, (dialog, which) -> requestShizukuPermission());
+        }
+        builder.show();
+    }
+
+    private void requestShizukuPermission() {
+        try {
+            Shizuku.requestPermission(SHIZUKU_PERMISSION_REQUEST_CODE);
+        } catch (Throwable th) {
+            Toast.makeText(this, R.string.privileged_access_shizuku_missing, Toast.LENGTH_SHORT).show();
+        }
     }
 
     /** Slides the toolbar chooser in from the top with a springy settle. */
@@ -232,6 +310,9 @@ public class EditorActivity extends AppCompatActivity implements AdapterView.OnI
                         dialog.dismiss();
                     })
                     .show();
+        } else if (id == R.id.action_privileged_access) {
+            showPrivilegedAccessDialog();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }

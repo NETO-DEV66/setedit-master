@@ -10,11 +10,12 @@ A modern, Material 3 Settings Database Editor for Android.
 
 [![Latest release](https://img.shields.io/github/v/release/NETO-DEV66/setedit-master?label=release&color=5B4CDB)](https://github.com/NETO-DEV66/setedit-master/releases/latest)
 [![Downloads](https://img.shields.io/github/downloads/NETO-DEV66/setedit-master/total?color=5B4CDB)](https://github.com/NETO-DEV66/setedit-master/releases)
-[![Min SDK](https://img.shields.io/badge/Android-5.0%2B%20(API%2021)-5B4CDB)](https://developer.android.com/about/versions/lollipop)
+[![Min SDK](https://img.shields.io/badge/Android-7.0%2B%20(API%2024)-5B4CDB)](https://developer.android.com/about/versions/nougat)
+[![Target SDK](https://img.shields.io/badge/target-API%2034-5B4CDB)](https://developer.android.com/about/versions/14)
 [![License](https://img.shields.io/badge/license-GPLv3-5B4CDB)](LICENSE)
 [![Website](https://img.shields.io/badge/website-live-5B4CDB)](https://neto-dev66.github.io/setedit-master/)
 
-[**Download APK**](https://github.com/NETO-DEV66/setedit-master/releases/latest/download/SetEdit-3.2-release.apk) ·
+[**Download APK**](https://github.com/NETO-DEV66/setedit-master/releases/latest/download/SetEdit-3.3-release.apk) ·
 [**Website**](https://neto-dev66.github.io/setedit-master/) ·
 [**Releases**](https://github.com/NETO-DEV66/setedit-master/releases) ·
 [**Report a bug**](https://github.com/NETO-DEV66/setedit-master/issues)
@@ -46,26 +47,27 @@ settings`. Edit any row by name or value, or add a new one.
 | **Add, edit, delete** | Create new keys, edit values, and remove entries (subject to permission). |
 | **Shortcuts & automation** | Export actions as shortcuts and run them from other apps. |
 | **Android TV** | A leanback surface for the big screen. |
+| **Works on Android 15, 16 and 17** | Targets API 34 so it installs everywhere, and uses root or Shizuku to keep every table editable. |
 | **Lean build** | R8 and resource shrinking keep the signed release APK small and quick to start. |
 
 ## Download
 
 Grab the latest signed APK:
 
-**[⬇ SetEdit-3.2-release.apk](https://github.com/NETO-DEV66/setedit-master/releases/latest/download/SetEdit-3.2-release.apk)** (~1.8 MB)
+**[⬇ SetEdit-3.3-release.apk](https://github.com/NETO-DEV66/setedit-master/releases/latest/download/SetEdit-3.3-release.apk)** (~1.7 MB)
 
 | | |
 |---|---|
 | Package | `io.github.netodev66.setedit` |
-| Version | 3.2 (versionCode 11) |
-| Requires | Android 5.0 (API 21) or newer |
-| Size | ~1.8 MB |
+| Version | 3.3 (versionCode 12) |
+| Requires | Android 7.0 (API 24) or newer |
+| Size | ~1.7 MB |
 
 Verify the download:
 
 ```shell
-sha256sum SetEdit-3.2-release.apk
-# 0f18db13c2b07acef142cd1a4a91b148dd51973a31af8be8a9d305ff7f2647cd
+sha256sum SetEdit-3.3-release.apk
+# add8b4eb08ed28c20725164e2b975424d0cc2b171557089d065dd011fd54e3e1
 ```
 
 ## Permissions
@@ -81,21 +83,26 @@ pm grant io.github.netodev66.setedit android.permission.WRITE_SECURE_SETTINGS
 read values. On older devices you can instead install SetEdit to the system
 partition on a rooted device.
 
-### Android 14 and up
+### Android 15, 16 and 17
 
-SetEdit targets API 22 on purpose — API 23 (Android M) and later stop it from
-changing some settings without root or ADB. Android 14 added a block on installing
-apps that target API 22 or lower, so install with the bypass flag:
+Starting with Android 15 the platform refuses to install any app that targets below
+API 24, and once an app targets a modern API the `SettingsProvider` hides most
+`system`, `secure` and `global` keys from it and rejects many writes. SetEdit now
+targets API 34, so it installs and launches normally, and it reads and writes the
+tables through a **privileged shell** instead of the `ContentResolver`:
 
-```shell
-adb install --bypass-low-target-sdk-block SetEdit-3.2-release.apk
-```
+- **Root** — used automatically when the device is rooted. Nothing to set up.
+- **Shizuku** — for non-rooted devices. Install and start
+  [Shizuku](https://shizuku.rikka.app/), then open SetEdit's overflow menu →
+  **Grant privileged access** → **Grant**.
 
-Or, from a rooted shell:
+Both routes run the standard `settings get/put/delete` commands as the shell user
+(uid 2000), which the `SettingsProvider` exempts from its target-SDK checks — the
+same behaviour as `adb shell settings`. Without either, the app still opens but can
+only show the keys the platform exposes to a regular app.
 
-```shell
-pm install --bypass-low-target-sdk-block SetEdit-3.2-release.apk
-```
+> On Android 14 you may still see a low-target-SDK prompt when sideloading older
+> builds; SetEdit 3.3+ no longer needs it because it targets API 34.
 
 ## Build from source
 

@@ -1,6 +1,6 @@
 SetEdit lets you read and change Android's system settings tables — system, secure, and global — the same values you would normally reach with "adb shell settings".
 
-This build adds a full Material 3 redesign, smooth spring-based animations, and a fresh app icon.
+This build works on Android 15, 16 and 17: it targets API 34, so it installs and launches normally, and it reads and writes every table through a privileged shell. Root is used automatically when the device is rooted; on non-rooted devices install and start Shizuku and grant access from the app's overflow menu.
 
 WARNING: Changing system settings can break your device. We support only this app, not your device's system software. Make a note of the original value before you change anything.
 
@@ -10,12 +10,5 @@ pm grant io.github.netodev66.setedit android.permission.WRITE_SECURE_SETTINGS
 
 Both WRITE_SETTINGS and WRITE_SECURE_SETTINGS are optional if you do not need to edit any items.
 
-This app targets API 22 because API 23 (Android M) onwards do not allow it to modify some setting items without elevated permissions such as root or ADB. On Android 14 onwards, a restriction prevents installing an app that targets API 22 or earlier without elevated permission. Install it from an ADB shell with:
+On Android 15 and later the platform hides most settings from regular apps. Use root, or install and start Shizuku (https://shizuku.rikka.app/) and grant privileged access from the overflow menu, to keep every table editable.
 
-adb install --bypass-low-target-sdk-block SetEdit.apk
-
-Or, from a rooted shell:
-
-pm install --bypass-low-target-sdk-block SetEdit.apk
-
-(Replace SetEdit.apk with the actual file name or location.)

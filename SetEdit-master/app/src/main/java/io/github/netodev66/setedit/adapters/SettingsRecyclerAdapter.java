@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import io.github.netodev66.setedit.R;
 import io.github.netodev66.setedit.SettingsType;
@@ -28,6 +30,12 @@ import io.github.netodev66.setedit.utils.SettingsUtils;
 
 public class SettingsRecyclerAdapter extends AbsRecyclerAdapter {
     public static final String[] columns = {"_id", "name", "value"};
+
+    private static final ExecutorService READ_EXECUTOR = Executors.newSingleThreadExecutor(runnable -> {
+        Thread thread = new Thread(runnable, "setedit-settings-read");
+        thread.setDaemon(true);
+        return thread;
+    });
 
     @SettingsType
     private final String mSettingsType;
@@ -43,8 +51,21 @@ public class SettingsRecyclerAdapter extends AbsRecyclerAdapter {
         refresh();
     }
 
+    /**
+     * Loads the table off the main thread. Reading through the privileged shell blocks on a
+     * process, so it must not run on the UI thread.
+     */
     public void refresh() {
-        swapCursor(getCursor(context, mSettingsType));
+        READ_EXECUTOR.submit(() -> {
+            Cursor cursor = getCursor(context, mSettingsType);
+            context.runOnUiThread(() -> {
+                if (context.isDestroyed()) {
+                    cursor.close();
+                    return;
+                }
+                swapCursor(cursor);
+            });
+        });
     }
 
     @NonNull
@@ -234,6 +255,13 @@ public class SettingsRecyclerAdapter extends AbsRecyclerAdapter {
 
     @NonNull
     private static Cursor getCursor(Context context, String settingsType) {
+        // Prefer the privileged shell: on Android 15+ the SettingsProvider hides most keys from
+        // apps that target a modern SDK, so the ContentResolver view would be incomplete.
+        @Nullable
+        List<Pair<String, String>> shellItems = SettingsUtils.readAll(settingsType);
+        if (shellItems != null) {
+            return buildCursor(shellItems);
+        }
         try {
             ContentResolver contentResolver = context.getContentResolver();
             @Nullable
@@ -244,5 +272,15 @@ public class SettingsRecyclerAdapter extends AbsRecyclerAdapter {
             th.printStackTrace();
             return new MatrixCursor(columns);
         }
+    }
+
+    @NonNull
+    private static Cursor buildCursor(@NonNull List<Pair<String, String>> items) {
+        MatrixCursor cursor = new MatrixCursor(columns, items.size());
+        long id = 0;
+        for (Pair<String, String> item : items) {
+            cursor.addRow(new Object[]{id++, item.first, item.second});
+        }
+        return new SettingsCursor(cursor);
     }
 }

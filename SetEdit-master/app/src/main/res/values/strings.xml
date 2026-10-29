@@ -42,4 +42,14 @@
     <string name="delete_shortcut_title">Delete shortcut</string>
     <string name="delete_shortcut_message">SetEdit cannot delete a shortcut automatically. To delete the shortcut, you must remove it from the launcher where it was originally added.</string>
     <string name="drag_item">Drag item</string>
+    <string name="grant_privileged_access">Grant privileged access</string>
+    <string name="privileged_access_title">Privileged access</string>
+    <string name="privileged_access_message">Android 15 and later hide most system, secure and global settings from regular apps. SetEdit needs either root or Shizuku to read and write them. Root is used automatically when available; otherwise install and start Shizuku, then grant SetEdit access.</string>
+    <string name="privileged_access_root">Root access is active.</string>
+    <string name="privileged_access_shizuku_ready">Shizuku access is active.</string>
+    <string name="privileged_access_shizuku_installed">Shizuku is running. Tap Grant to allow SetEdit to use it.</string>
+    <string name="privileged_access_shizuku_missing">Shizuku is not running. Install and start Shizuku, or grant root, to edit settings on Android 15 and later.</string>
+    <string name="grant">Grant</string>
+    <string name="privileged_access_granted">Privileged access granted.</string>
+    <string name="privileged_access_denied">Privileged access was denied.</string>
 </resources>

@@ -1,0 +1,1 @@
+Works on Android 15, 16 and 17. The system, secure and global tables now read and write through root or Shizuku, and the app targets API 34 so it installs normally.
