@@ -1,0 +1,1 @@
+Fixes a crash on launch. The app no longer initialises Sui (a Magisk module) at startup, which could abort the process before the first screen on Android 15+.

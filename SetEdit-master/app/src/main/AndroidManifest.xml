@@ -71,9 +71,11 @@
                 android:value="Applies scheduled settings changes once after the device boots" />
         </service>
 
-        <!-- Shizuku hands the app the shell identity so it can edit settings on Android 15+. -->
+        <!-- Shizuku hands the app the shell identity so it can edit settings on Android 15+.
+             The subclass disables Sui auto-init (root is already available via libsu) and keeps
+             a provider-startup failure from aborting the whole process. -->
         <provider
-            android:name="rikka.shizuku.ShizukuProvider"
+            android:name=".SetEditShizukuProvider"
             android:authorities="${applicationId}.shizuku"
             android:enabled="true"
             android:exported="true"

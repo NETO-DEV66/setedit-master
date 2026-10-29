@@ -24,8 +24,8 @@ android {
         // Shizuku API requires API 24; Android 15+ refuses to install anything targeting < 24.
         minSdk 24
         targetSdk 34
-        versionCode 12
-        versionName "3.3"
+        versionCode 13
+        versionName "3.4"
         resConfig "en"
     }
 
