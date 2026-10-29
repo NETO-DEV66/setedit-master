@@ -13,3 +13,6 @@ local.properties
 key.properties
 *.jks
 *.keystore
+
+# Local distribution artifacts
+.dist/
