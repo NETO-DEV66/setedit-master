@@ -1,19 +1,17 @@
 # SetEdit
 
-The open source version of **4A Settings Database Editor**.
+A modern, Material 3 Settings Database Editor for Android.
 
 > Looking for the latest build? See the [project README](../README.md) or grab the
-> signed APK from the [latest release](https://github.com/NETO-DEV66/setedit-master/releases/latest/download/SetEdit-3.1-release.apk).
+> signed APK from the [latest release](https://github.com/NETO-DEV66/setedit-master/releases/latest/download/SetEdit-3.2-release.apk).
 
-[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
-alt="Get it on F-Droid"
-height="80" />](https://f-droid.org/packages/io.github.muntashirakon.setedit)
+[<img src="https://img.shields.io/badge/license-GPLv3-5B4CDB" alt="GPLv3" height="28" />](LICENSE)
 
-**WARNING:** I do not guarantee that problems caused by the improper use of this utility can be fixed, and we are unable to help you with any such problems. We support only this app, not your device's system software. Settings Database Editor (SetEdit) is invaluable if you need it, but if you're not careful you're very likely to mess something up.
+**WARNING:** We do not guarantee that problems caused by the improper use of this utility can be fixed, and we are unable to help you with any such problems. We support only this app, not your device's system software. Settings Database Editor (SetEdit) is invaluable if you need it, but if you're not careful you're very likely to mess something up.
 
 By default, for your protection, Android prevents you from modifying the **SECURE** and **GLOBAL** tables. If you have Android Jellybean or later, you can remove this protection from an ADB shell using the following command:
 ```shell
-pm grant io.github.muntashirakon.setedit android.permission.WRITE_SECURE_SETTINGS
+pm grant io.github.netodev66.setedit android.permission.WRITE_SECURE_SETTINGS
 ```
 On earlier versions, you can only remove this protection on a rooted device by installing SetEdit to the system partition.
 
@@ -39,8 +37,9 @@ pm install --bypass-low-target-sdk-block SetEdit.apk
 
 ### License
 
-GNU General Public License v3.0
+GNU General Public License v3.0 — see [LICENSE](LICENSE).
 
 ### Credits
 
-[SetEdit by 4A](https://play.google.com/store/apps/details?id=by4a.setedit22)
+Maintained by [NETO-DEV66](https://github.com/NETO-DEV66). Original GPL-3.0 copyright
+notices are retained in the relevant source files as the license requires.

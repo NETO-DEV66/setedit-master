@@ -30,7 +30,7 @@
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
-        <io.github.muntashirakon.widget.RecyclerView
+        <io.github.netodev66.widget.RecyclerView
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

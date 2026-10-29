@@ -104,14 +104,28 @@
 
   .shots { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
   .shot {
+    margin: 0;
     background: var(--surface-variant);
     border-radius: var(--radius);
+    overflow: hidden;
+    animation: rise .6s cubic-bezier(.34,1.46,.64,1) both;
+  }
+  .shot:nth-child(2) { animation-delay: .08s; }
+  .shot:nth-child(3) { animation-delay: .16s; }
+  .shot img {
+    display: block;
+    width: 100%;
+    height: auto;
     aspect-ratio: 9 / 16;
-    display: grid; place-items: center;
-    color: var(--on-surface-variant);
+    object-fit: cover;
+    object-position: top;
+  }
+  .shot figcaption {
+    padding: 12px 16px;
     font-size: .875rem;
+    font-weight: 600;
     text-align: center;
-    padding: 20px;
+    color: var(--on-surface-variant);
   }
 
   pre {
@@ -157,18 +171,18 @@
   <h1>SetEdit</h1>
   <p class="tagline">View and edit Android system settings directly — with a fresh Material 3 look.</p>
   <div class="cta">
-    <a class="btn primary" href="https://github.com/NETO-DEV66/setedit-master/releases/latest/download/SetEdit-3.1-release.apk">
+    <a class="btn primary" href="https://github.com/NETO-DEV66/setedit-master/releases/latest/download/SetEdit-3.2-release.apk">
       Download APK
     </a>
     <a class="btn tonal" href="https://github.com/NETO-DEV66/setedit-master">View on GitHub</a>
   </div>
-  <p class="meta">v3.1 · Android 5.0+ · Signed release · ~1.8 MB</p>
+  <p class="meta">v3.2 · Android 5.0+ · Signed release · ~1.8 MB</p>
 </header>
 
 <main class="wrap">
 
   <section>
-    <h2>What's new in v3.1</h2>
+    <h2>What's new in v3.2</h2>
     <div class="grid">
       <div class="card">
         <div class="chip">🎨</div>
@@ -196,9 +210,18 @@
   <section>
     <h2>Screens</h2>
     <div class="shots">
-      <div class="shot">Editor list<br/>with card rows</div>
-      <div class="shot">Edit dialog<br/>with spring pop</div>
-      <div class="shot">Dark theme<br/>full palette</div>
+      <figure class="shot">
+        <img src="assets/screenshots/1-list.png" alt="SetEdit list of system settings with card rows" loading="lazy" />
+        <figcaption>Editor list</figcaption>
+      </figure>
+      <figure class="shot">
+        <img src="assets/screenshots/2-edit.png" alt="SetEdit edit dialog for a setting value" loading="lazy" />
+        <figcaption>Edit dialog</figcaption>
+      </figure>
+      <figure class="shot">
+        <img src="assets/screenshots/3-dark.png" alt="SetEdit in dark theme" loading="lazy" />
+        <figcaption>Dark theme</figcaption>
+      </figure>
     </div>
   </section>
 
@@ -206,14 +229,14 @@
     <h2>Install</h2>
     <p>Download the APK and open it on your device. You may need to allow installs from your browser or file manager.</p>
     <pre><code># Verify the download
-sha256sum SetEdit-3.1-release.apk
-# 3293fd3a8acefbfe5173f314751db3b1c261df545cfbf513784746091a479e37</code></pre>
+sha256sum SetEdit-3.2-release.apk
+# 0f18db13c2b07acef142cd1a4a91b148dd51973a31af8be8a9d305ff7f2647cd</code></pre>
   </section>
 
 </main>
 
 <footer>
-  <p>SetEdit · Package <code>io.github.muntashirakon.setedit</code></p>
+  <p>SetEdit · Package <code>io.github.netodev66.setedit</code></p>
   <p><a href="https://github.com/NETO-DEV66/setedit-master/releases">All releases</a> · <a href="https://github.com/NETO-DEV66/setedit-master/issues">Report an issue</a></p>
 </footer>
 

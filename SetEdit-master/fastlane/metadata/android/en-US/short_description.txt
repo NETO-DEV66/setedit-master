@@ -1,1 +1,1 @@
-Open source version of the 4A Settings Database Editor
+View and edit Android system settings — Material 3 redesign

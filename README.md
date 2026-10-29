@@ -6,7 +6,7 @@
 
 **Settings Database Editor — view and edit Android system settings directly.**
 
-A modern, Material 3 rebuild of the classic 4A Settings Database Editor.
+A modern, Material 3 Settings Database Editor for Android.
 
 [![Latest release](https://img.shields.io/github/v/release/NETO-DEV66/setedit-master?label=release&color=5B4CDB)](https://github.com/NETO-DEV66/setedit-master/releases/latest)
 [![Downloads](https://img.shields.io/github/downloads/NETO-DEV66/setedit-master/total?color=5B4CDB)](https://github.com/NETO-DEV66/setedit-master/releases)
@@ -14,7 +14,7 @@ A modern, Material 3 rebuild of the classic 4A Settings Database Editor.
 [![License](https://img.shields.io/badge/license-GPLv3-5B4CDB)](LICENSE)
 [![Website](https://img.shields.io/badge/website-live-5B4CDB)](https://neto-dev66.github.io/setedit-master/)
 
-[**Download APK**](https://github.com/NETO-DEV66/setedit-master/releases/latest/download/SetEdit-3.1-release.apk) ·
+[**Download APK**](https://github.com/NETO-DEV66/setedit-master/releases/latest/download/SetEdit-3.2-release.apk) ·
 [**Website**](https://neto-dev66.github.io/setedit-master/) ·
 [**Releases**](https://github.com/NETO-DEV66/setedit-master/releases) ·
 [**Report a bug**](https://github.com/NETO-DEV66/setedit-master/issues)
@@ -27,7 +27,7 @@ A modern, Material 3 rebuild of the classic 4A Settings Database Editor.
 
 SetEdit lets you read and change Android's system settings tables — `system`,
 `secure`, and `global` — the same values you would normally reach with `adb shell
-settings`. It is the open source version of the 4A Settings Database Editor.
+settings`. Edit any row by name or value, or add a new one.
 
 > [!WARNING]
 > Changing system settings can break your device. SetEdit supports the app, not your
@@ -52,20 +52,20 @@ settings`. It is the open source version of the 4A Settings Database Editor.
 
 Grab the latest signed APK:
 
-**[⬇ SetEdit-3.1-release.apk](https://github.com/NETO-DEV66/setedit-master/releases/latest/download/SetEdit-3.1-release.apk)** (~1.8 MB)
+**[⬇ SetEdit-3.2-release.apk](https://github.com/NETO-DEV66/setedit-master/releases/latest/download/SetEdit-3.2-release.apk)** (~1.8 MB)
 
 | | |
 |---|---|
-| Package | `io.github.muntashirakon.setedit` |
-| Version | 3.1 (versionCode 10) |
+| Package | `io.github.netodev66.setedit` |
+| Version | 3.2 (versionCode 11) |
 | Requires | Android 5.0 (API 21) or newer |
 | Size | ~1.8 MB |
 
 Verify the download:
 
 ```shell
-sha256sum SetEdit-3.1-release.apk
-# 3293fd3a8acefbfe5173f314751db3b1c261df545cfbf513784746091a479e37
+sha256sum SetEdit-3.2-release.apk
+# 0f18db13c2b07acef142cd1a4a91b148dd51973a31af8be8a9d305ff7f2647cd
 ```
 
 ## Permissions
@@ -74,7 +74,7 @@ By default Android blocks edits to the **secure** and **global** tables. To allo
 them, grant the permission once over ADB:
 
 ```shell
-pm grant io.github.muntashirakon.setedit android.permission.WRITE_SECURE_SETTINGS
+pm grant io.github.netodev66.setedit android.permission.WRITE_SECURE_SETTINGS
 ```
 
 `WRITE_SETTINGS` and `WRITE_SECURE_SETTINGS` are both optional if you only need to
@@ -88,13 +88,13 @@ changing some settings without root or ADB. Android 14 added a block on installi
 apps that target API 22 or lower, so install with the bypass flag:
 
 ```shell
-adb install --bypass-low-target-sdk-block SetEdit-3.1-release.apk
+adb install --bypass-low-target-sdk-block SetEdit-3.2-release.apk
 ```
 
 Or, from a rooted shell:
 
 ```shell
-pm install --bypass-low-target-sdk-block SetEdit-3.1-release.apk
+pm install --bypass-low-target-sdk-block SetEdit-3.2-release.apk
 ```
 
 ## Build from source
@@ -127,7 +127,7 @@ Keystores and `key.properties` are git-ignored.
 ```
 SetEdit-master/
 ├── app/
-│   ├── src/main/java/io/github/muntashirakon/setedit/   # activities, adapters, utils
+│   ├── src/main/java/io/github/netodev66/setedit/   # activities, adapters, utils
 │   ├── src/main/res/                                    # layouts, themes, icons
 │   └── build.gradle
 └── docs/                                                # GitHub Pages site
@@ -139,5 +139,8 @@ GNU General Public License v3.0 — see [LICENSE](SetEdit-master/LICENSE).
 
 ## Credits
 
-- Original [SetEdit by 4A](https://play.google.com/store/apps/details?id=by4a.setedit22)
-- Upstream open source version by [Muntashir Al-Islam](https://github.com/Muntashirakon/SetEdit)
+Maintained by [NETO-DEV66](https://github.com/NETO-DEV66).
+
+SetEdit is distributed under the GNU General Public License v3.0. It is derived from
+earlier GPL-3.0 code, whose original copyright notices are retained in the relevant
+source files as the license requires. See [LICENSE](SetEdit-master/LICENSE).

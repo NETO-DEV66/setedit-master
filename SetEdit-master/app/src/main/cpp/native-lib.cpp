@@ -59,7 +59,7 @@ handle_property(const prop_info *propInfo, void *cookie) {
 }
 
 extern "C" JNIEXPORT void JNICALL
-Java_io_github_muntashirakon_setedit_Native_readAndroidPropertiesPost26(JNIEnv *env, jclass clazz, jobject property_callback) {
+Java_io_github_netodev66_setedit_Native_readAndroidPropertiesPost26(JNIEnv *env, jclass clazz, jobject property_callback) {
     get_from_libc("__system_property_foreach", &property_foreach);
     if (property_foreach == nullptr) return;
     struct JNICookie jniCookie = {
@@ -72,7 +72,7 @@ Java_io_github_muntashirakon_setedit_Native_readAndroidPropertiesPost26(JNIEnv *
 
 
 extern "C" JNIEXPORT jboolean JNICALL
-Java_io_github_muntashirakon_setedit_Native_readAndroidPropertyPre26(JNIEnv *env, jclass __unused clazz, jint n, jobjectArray property) {
+Java_io_github_netodev66_setedit_Native_readAndroidPropertyPre26(JNIEnv *env, jclass __unused clazz, jint n, jobjectArray property) {
     get_from_libc("__system_property_find_nth", &property_find_nth);
     if (property_find_nth == nullptr) return 0;
     const prop_info *propInfo = property_find_nth(n);

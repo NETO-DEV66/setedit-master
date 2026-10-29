@@ -16,16 +16,16 @@ def releaseKeyAlias = keyProps.getProperty('keyAlias') ?: System.getenv('KEY_ALI
 def releaseKeyPassword = keyProps.getProperty('keyPassword') ?: System.getenv('KEY_PASSWORD') ?: 'setedit2026'
 
 android {
-    namespace "io.github.muntashirakon.setedit"
+    namespace "io.github.netodev66.setedit"
     compileSdk 34
 
     defaultConfig {
-        applicationId "io.github.muntashirakon.setedit"
+        applicationId "io.github.netodev66.setedit"
         minSdk 21
         //noinspection ExpiredTargetSdkVersion
         targetSdk 22
-        versionCode 10
-        versionName "3.1"
+        versionCode 11
+        versionName "3.2"
         resConfig "en"
     }
 

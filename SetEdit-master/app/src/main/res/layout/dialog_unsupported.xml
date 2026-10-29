@@ -23,6 +23,6 @@
         android:focusable="true"
         android:clickable="true"
         app:fontFamily="monospace"
-        tools:text="pm grant io.github.muntashirakon.setedit android.permission.WRITE_SECURE_SETTINGS" />
+        tools:text="pm grant io.github.netodev66.setedit android.permission.WRITE_SECURE_SETTINGS" />
 
 </androidx.appcompat.widget.LinearLayoutCompat>
