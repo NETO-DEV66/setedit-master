@@ -2,6 +2,9 @@
 
 The open source version of **4A Settings Database Editor**.
 
+> Looking for the latest build? See the [project README](../README.md) or grab the
+> signed APK from the [latest release](https://github.com/NETO-DEV66/setedit-master/releases/latest/download/SetEdit-3.1-release.apk).
+
 [<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
 alt="Get it on F-Droid"
 height="80" />](https://f-droid.org/packages/io.github.muntashirakon.setedit)
