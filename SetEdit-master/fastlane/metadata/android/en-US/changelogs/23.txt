@@ -1,0 +1,23 @@
+A big one — sort, history, widgets and smarter recipes.
+
+* Sort any table. Order a list by name or by value, A-Z or Z-A, straight
+  from the toolbar.
+* Change history. Every edit is recorded, newest first. Open the history
+  and tap an entry to put the old value back.
+* Copy anything. Long-press a row, or use the editor, to copy a key, a
+  value or a whole row to the clipboard.
+* Search values too. A new switch in search also matches setting values,
+  not just key names.
+* Sensitive keys stand out. Risky keys now show a small warning badge in
+  the list and inside the editor, so you know before you touch them.
+* Recipes, organised. Recipes are grouped into Animations, Display, Touch,
+  Accessibility and Custom, and you can search them. You can also write
+  your own recipes and keep them alongside the built-ins.
+* Auto-backup. Turn it on and SetEdit saves a snapshot before changing a
+  sensitive key, so you can always get back.
+* Quick Settings tile. Flip straight into SetEdit from the notification
+  shade.
+* Home-screen widget. Pin your starred settings keys to the home screen
+  and open them with one tap.
+* Reduce motion. A new setting turns off the bouncy screen and list
+  animations if you prefer things calm.
