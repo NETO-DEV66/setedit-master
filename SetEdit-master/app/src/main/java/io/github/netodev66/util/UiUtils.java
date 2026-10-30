@@ -13,12 +13,15 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.TypedValue;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.Interpolator;
 import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.AttrRes;
@@ -65,8 +68,83 @@ public final class UiUtils {
                 .scaleX(1f)
                 .scaleY(1f)
                 .setDuration(duration)
-                .setInterpolator(AnimationUtils.loadInterpolator(context, R.interpolator.m3_spring_bouncy))
+                .setInterpolator(bouncy(context))
                 .start();
+    }
+
+    /** The shared overshoot interpolator, loaded once per process. */
+    @NonNull
+    public static Interpolator bouncy(@NonNull Context context) {
+        Interpolator cached = BOUNCY;
+        if (cached == null) {
+            cached = AnimationUtils.loadInterpolator(context.getApplicationContext(),
+                    R.interpolator.m3_spring_bouncy);
+            BOUNCY = cached;
+        }
+        return cached;
+    }
+
+    @Nullable
+    private static volatile Interpolator BOUNCY;
+
+    /**
+     * Springs a list row into place the first time it is bound. Guarded by a view tag so a
+     * rebind or a re-scroll does not replay the animation and make the list flicker.
+     */
+    public static void playBouncyListItem(@NonNull View view, int position) {
+        if (Boolean.TRUE.equals(view.getTag(R.id.tag_item_animated))) return;
+        view.setTag(R.id.tag_item_animated, Boolean.TRUE);
+        view.setAlpha(0f);
+        view.setTranslationY(dpToPx(view.getContext(), 16));
+        view.animate()
+                .alpha(1f)
+                .translationY(0f)
+                .setStartDelay(Math.min(position, 6) * 40L)
+                .setDuration(340L)
+                .setInterpolator(bouncy(view.getContext()))
+                .start();
+    }
+
+    /**
+     * Springs a whole screen's root in: a short fade-up without scaling, so it never clips the
+     * content the way a scale would.
+     */
+    public static void playBouncyScreenEntrance(@NonNull View view) {
+        view.setAlpha(0f);
+        view.setTranslationY(dpToPx(view.getContext(), 12));
+        view.animate()
+                .alpha(1f)
+                .translationY(0f)
+                .setDuration(300L)
+                .setInterpolator(bouncy(view.getContext()))
+                .start();
+    }
+
+    /**
+     * Adds a springy press feedback to a clickable view. Returns {@code false} from the touch
+     * listener so the click, ripple and scroll still work as usual.
+     */
+    public static void attachPressBounce(@NonNull View view) {
+        view.setOnTouchListener((v, event) -> {
+            switch (event.getActionMasked()) {
+                case MotionEvent.ACTION_DOWN:
+                    v.animate().scaleX(0.97f).scaleY(0.97f)
+                            .setDuration(90L)
+                            .setInterpolator(new DecelerateInterpolator())
+                            .start();
+                    break;
+                case MotionEvent.ACTION_UP:
+                case MotionEvent.ACTION_CANCEL:
+                    v.animate().scaleX(1f).scaleY(1f)
+                            .setDuration(280L)
+                            .setInterpolator(bouncy(v.getContext()))
+                            .start();
+                    break;
+                default:
+                    break;
+            }
+            return false;
+        });
     }
 
     /** Pops a dialog in with the shared bouncy easing. Safe to call from onShow. */

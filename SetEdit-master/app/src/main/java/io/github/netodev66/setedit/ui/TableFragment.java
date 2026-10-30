@@ -112,10 +112,12 @@ public class TableFragment extends Fragment implements RowAdapter.Listener {
 
         RecyclerView recycler = view.findViewById(R.id.list_recycler);
         recycler.setLayoutManager(new LinearLayoutManager(requireContext()));
+        recycler.setItemAnimator(null); // rows animate themselves; the default animator fights it
         adapter = new RowAdapter(this, true, Tables.isSettingsTable(tableType),
                 FavoritesStore.all(requireContext()));
         recycler.setAdapter(adapter);
 
+        io.github.netodev66.util.UiUtils.playBouncyScreenEntrance(recycler);
         load();
     }
 
@@ -185,15 +187,10 @@ public class TableFragment extends Fragment implements RowAdapter.Listener {
     @Override
     public void onResume() {
         super.onResume();
+        // Refresh the favorite set in place instead of rebuilding the adapter, so the list keeps
+        // its scroll position when returning from the editor.
         if (adapter != null) {
-            adapter = new RowAdapter(this, true, Tables.isSettingsTable(tableType),
-                    FavoritesStore.all(requireContext()));
-            View view = getView();
-            if (view != null) {
-                RecyclerView recycler = view.findViewById(R.id.list_recycler);
-                recycler.setAdapter(adapter);
-            }
-            applyFilter();
+            adapter.setFavorites(FavoritesStore.all(requireContext()));
         }
     }
 
@@ -224,7 +221,7 @@ public class TableFragment extends Fragment implements RowAdapter.Listener {
     public void onStarClick(int position, @NonNull String key) {
         if (!Tables.isSettingsTable(tableType)) return;
         FavoritesStore.toggle(requireContext(), Tables.settingsTypeOf(tableType), key);
-        if (adapter != null) adapter.notifyDataSetChanged();
+        if (adapter != null) adapter.toggleFavorite(position, key);
     }
 
     private void writeAsync(@NonNull String key, @NonNull String value, boolean isNew) {

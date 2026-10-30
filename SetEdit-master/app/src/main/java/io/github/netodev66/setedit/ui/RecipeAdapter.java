@@ -51,11 +51,13 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.Holder> {
 
     @Override
     public void onBindViewHolder(@NonNull Holder holder, int position) {
+        io.github.netodev66.util.UiUtils.playBouncyListItem(holder.itemView, position);
         Recipe recipe = items.get(position);
         holder.icon.setImageResource(iconFor(recipe.icon));
         holder.title.setText(recipe.title);
         holder.description.setText(recipe.description);
         holder.apply.setOnClickListener(v -> listener.onApply(recipe));
+        io.github.netodev66.util.UiUtils.attachPressBounce(holder.itemView);
         holder.itemView.setOnClickListener(v -> listener.onApply(recipe));
     }
 

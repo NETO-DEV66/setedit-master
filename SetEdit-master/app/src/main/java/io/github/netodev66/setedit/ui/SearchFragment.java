@@ -71,8 +71,10 @@ public class SearchFragment extends Fragment implements SearchAdapter.Listener {
 
         RecyclerView recycler = view.findViewById(R.id.list_recycler);
         recycler.setLayoutManager(new LinearLayoutManager(requireContext()));
+        recycler.setItemAnimator(null);
         adapter = new SearchAdapter(this, FavoritesStore.all(requireContext()));
         recycler.setAdapter(adapter);
+        io.github.netodev66.util.UiUtils.playBouncyScreenEntrance(recycler);
 
         input.addTextChangedListener(new android.text.TextWatcher() {
             @Override

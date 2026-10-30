@@ -66,6 +66,11 @@ public class SettingsFragment extends Fragment {
         advanced.setOnCheckedChangeListener((b, checked) ->
                 AppPrefs.setShowAdvanced(requireContext(), checked));
 
+        MaterialSwitch checkUpdates = view.findViewById(R.id.switch_check_updates);
+        checkUpdates.setChecked(AppPrefs.isCheckUpdates(requireContext()));
+        checkUpdates.setOnCheckedChangeListener((b, checked) ->
+                AppPrefs.setCheckUpdates(requireContext(), checked));
+
         view.findViewById(R.id.row_history).setOnClickListener(v ->
                 new MaterialAlertDialogBuilder(requireContext())
                         .setTitle(R.string.settings_clear_history)
@@ -79,6 +84,9 @@ public class SettingsFragment extends Fragment {
 
         MaterialTextView version = view.findViewById(R.id.version_value);
         version.setText(getString(R.string.settings_version, BuildConfig.VERSION_NAME));
+
+        view.findViewById(R.id.row_update).setOnClickListener(v ->
+                startActivity(io.github.netodev66.setedit.update.UpdateActivity.intent(requireContext())));
 
         view.findViewById(R.id.btn_onboarding).setOnClickListener(v ->
                 startActivity(new Intent(requireContext(), OnboardingActivity.class)));

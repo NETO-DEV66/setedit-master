@@ -71,7 +71,11 @@ public class BackupFragment extends Fragment implements RecipeAdapter.Listener {
 
         RecyclerView recipes = view.findViewById(R.id.backup_recipes);
         recipes.setLayoutManager(new LinearLayoutManager(requireContext()));
+        recipes.setItemAnimator(null);
         recipes.setAdapter(new RecipeAdapter(this, Recipe.all()));
+        io.github.netodev66.util.UiUtils.playBouncyScreenEntrance(recipes);
+        io.github.netodev66.util.UiUtils.attachPressBounce(export);
+        io.github.netodev66.util.UiUtils.attachPressBounce(restore);
     }
 
     private String fileName() {

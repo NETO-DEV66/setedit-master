@@ -1,0 +1,10 @@
+SetEdit can now update itself, and the app feels springier.
+
+* In-app updates: check for a new release, download it and install it without
+  leaving the app. Open it from Settings, the Home quick actions, or the prompt
+  that appears when a new version is found. The daily check can be turned off in
+  Settings.
+* Smooth bouncy animations across lists, screens, the editor sheet and the
+  bottom navigation.
+* Faster, smoother tables: the list keeps its scroll position when you return
+  from the editor, and starring a key rebinds only that row.

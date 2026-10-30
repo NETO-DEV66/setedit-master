@@ -210,6 +210,34 @@
     <string name="settings_about">About</string>
     <string name="settings_version">Version %1$s</string>
     <string name="settings_replay_onboarding">Show the intro again</string>
+
+    <!-- In-app updater -->
+    <string name="update_title">App update</string>
+    <string name="update_row">Check for updates</string>
+    <string name="update_row_desc">Download and install the newest version</string>
+    <string name="update_current">Installed version %1$s</string>
+    <string name="update_check">Check for updates</string>
+    <string name="update_checking">Checking for updates…</string>
+    <string name="update_check_idle">Tap check to look for a new version</string>
+    <string name="update_up_to_date">You are on the newest version</string>
+    <string name="update_up_to_date_body">SetEdit %1$s is the latest release. Check again any time.</string>
+    <string name="update_available_title">Version %1$s is available</string>
+    <string name="update_available_body">A newer build is ready to download and install.</string>
+    <string name="update_whats_new">What\'s new</string>
+    <string name="update_download">Download</string>
+    <string name="update_downloading">Downloading…</string>
+    <string name="update_download_percent">Downloading… %1$d%%</string>
+    <string name="update_downloaded_size">Downloaded %1$s</string>
+    <string name="update_ready">Ready to install</string>
+    <string name="update_ready_body">Tap install to open the package installer.</string>
+    <string name="update_install">Install</string>
+    <string name="update_retry">Retry</string>
+    <string name="update_download_failed">Download failed</string>
+    <string name="update_download_failed_body">Check your connection and try again.</string>
+    <string name="update_failed">Could not check for updates</string>
+    <string name="update_failed_body">No network, or GitHub is unreachable. Try again in a moment.</string>
+    <string name="update_allow_install">Allow SetEdit to install unknown apps, then tap install again.</string>
+    <string name="settings_check_updates">Check for updates on start</string>
     <string name="settings_history">Change history</string>
     <string name="settings_clear_history">Clear change history</string>
     <string name="settings_history_cleared">Change history cleared</string>

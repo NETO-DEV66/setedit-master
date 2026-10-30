@@ -15,7 +15,7 @@ A modern, Material 3 Settings Database Editor for Android.
 [![License](https://img.shields.io/badge/license-GPLv3-5B4CDB)](LICENSE)
 [![Website](https://img.shields.io/badge/website-live-5B4CDB)](https://neto-dev66.github.io/setedit-master/)
 
-[**Download APK**](https://github.com/NETO-DEV66/setedit-master/releases/latest/download/SetEdit-4.0-release.apk) ·
+[**Download APK**](https://github.com/NETO-DEV66/setedit-master/releases/latest/download/SetEdit-4.1-release.apk) ·
 [**Website**](https://neto-dev66.github.io/setedit-master/) ·
 [**Releases**](https://github.com/NETO-DEV66/setedit-master/releases) ·
 [**Report a bug**](https://github.com/NETO-DEV66/setedit-master/issues)
@@ -49,29 +49,31 @@ settings`. Edit any row by name or value, or add a new one.
 | **Risky-key warnings** | Keys that can destabilise a device are flagged before they are written. |
 | **Onboarding** | A short first-run tour that explains the privileged-access model. |
 | **Editor bottom sheet** | Create, edit and delete keys from a Material 3 modal sheet. |
+| **In-app updates** | SetEdit checks GitHub for a newer release, downloads the APK and installs it without leaving the app. |
 | **Table switcher** | Move between `system`, `secure`, `global`, and other tables from the toolbar. |
 | **Shortcuts & automation** | Export actions as shortcuts and run them from other apps. |
 | **Android TV** | A leanback surface for the big screen. |
 | **Works on Android 15, 16 and 17** | Targets API 34 so it installs everywhere, and uses root or Shizuku to keep every table editable. |
 | **Lean build** | R8 and resource shrinking keep the signed release APK small and quick to start. |
+| **Springy motion** | Lists, screens, the editor sheet and tab taps use one shared bouncy easing, so the app feels alive. |
 
 ## Download
 
 Grab the latest signed APK:
 
-**[⬇ SetEdit-4.0-release.apk](https://github.com/NETO-DEV66/setedit-master/releases/latest/download/SetEdit-4.0-release.apk)** (~2.0 MB)
+**[⬇ SetEdit-4.1-release.apk](https://github.com/NETO-DEV66/setedit-master/releases/latest/download/SetEdit-4.1-release.apk)** (~2.0 MB)
 
 | | |
 |---|---|
 | Package | `io.github.netodev66.setedit` |
-| Version | 4.0 (versionCode 20) |
+| Version | 4.1 (versionCode 21) |
 | Requires | Android 7.0 (API 24) or newer |
 | Size | ~2.0 MB |
 
 Verify the download:
 
 ```shell
-sha256sum SetEdit-4.0-release.apk
+sha256sum SetEdit-4.1-release.apk
 # 424d4aa018bac2053a7f8cf511022fc4baead64e7c93ac393bb913c98088de29
 ```
 

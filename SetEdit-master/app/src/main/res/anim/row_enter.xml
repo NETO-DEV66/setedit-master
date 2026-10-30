@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Row entrance used by the list item animator: fade up with a slight overshoot feel. -->
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:interpolator="@interpolator/m3_spring_bouncy">
+    <alpha
+        android:duration="300"
+        android:fromAlpha="0.0"
+        android:toAlpha="1.0" />
+    <translate
+        android:duration="320"
+        android:fromYDelta="14%"
+        android:toYDelta="0" />
+</set>

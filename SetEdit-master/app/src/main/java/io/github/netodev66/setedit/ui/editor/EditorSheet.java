@@ -182,6 +182,10 @@ public class EditorSheet extends BottomSheetDialogFragment {
         helpButton.setVisibility(isNew ? View.GONE : View.VISIBLE);
         starButton.setVisibility(canFavorite ? View.VISIBLE : View.GONE);
 
+        // Spring the sheet's content in for a lively open.
+        io.github.netodev66.util.UiUtils.playBouncyEntrance(view, 0.94f, 320L);
+        io.github.netodev66.util.UiUtils.attachPressBounce(starButton);
+
         ValueType.Type type = ValueType.of(value);
         applyType(view, type, typeText, boolRow, numberRow);
         valueInput.setText(value);

@@ -52,6 +52,7 @@ public class TableCardAdapter extends RecyclerView.Adapter<TableCardAdapter.Hold
 
     @Override
     public void onBindViewHolder(@NonNull Holder holder, int position) {
+        io.github.netodev66.util.UiUtils.playBouncyListItem(holder.itemView, position);
         TableMeta meta = items.get(position);
         holder.icon.setImageResource(meta.iconRes);
         holder.title.setText(meta.titleRes);
@@ -63,6 +64,7 @@ public class TableCardAdapter extends RecyclerView.Adapter<TableCardAdapter.Hold
         } else {
             holder.count.setVisibility(View.GONE);
         }
+        io.github.netodev66.util.UiUtils.attachPressBounce(holder.itemView);
         holder.itemView.setOnClickListener(v -> listener.onTableClick(meta));
     }
 

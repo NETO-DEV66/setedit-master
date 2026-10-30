@@ -44,6 +44,23 @@ public class RowAdapter extends RecyclerView.Adapter<RowAdapter.Holder> {
         this.favorites = favorites;
     }
 
+    /** Swaps the favorite set in place, so the list keeps its scroll position on resume. */
+    public void setFavorites(@NonNull java.util.Set<String> newFavorites) {
+        favorites.clear();
+        favorites.addAll(newFavorites);
+        notifyDataSetChanged();
+    }
+
+    /** Toggles the star for {@code key} without rebinding the whole list. */
+    public void toggleFavorite(int position, @NonNull String key) {
+        if (favorites.contains(key)) {
+            favorites.remove(key);
+        } else {
+            favorites.add(key);
+        }
+        if (position >= 0 && position < items.size()) notifyItemChanged(position);
+    }
+
     public void submit(@NonNull List<Pair<String, String>> newItems) {
         items.clear();
         items.addAll(newItems);
@@ -65,6 +82,7 @@ public class RowAdapter extends RecyclerView.Adapter<RowAdapter.Holder> {
 
     @Override
     public void onBindViewHolder(@NonNull Holder holder, int position) {
+        io.github.netodev66.util.UiUtils.playBouncyListItem(holder.itemView, position);
         Pair<String, String> item = items.get(position);
         String key = item.first == null ? "" : item.first;
         String value = item.second == null ? "" : item.second;
@@ -90,6 +108,7 @@ public class RowAdapter extends RecyclerView.Adapter<RowAdapter.Holder> {
             holder.star.setVisibility(View.GONE);
         }
 
+        io.github.netodev66.util.UiUtils.attachPressBounce(holder.itemView);
         holder.itemView.setOnClickListener(v ->
                 listener.onRowClick(holder.getBindingAdapterPosition(), key, value));
     }

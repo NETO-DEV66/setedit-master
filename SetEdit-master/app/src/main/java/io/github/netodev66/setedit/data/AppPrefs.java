@@ -23,6 +23,8 @@ public final class AppPrefs {
     private static final String KEY_ONBOARDED = "onboarded";
     private static final String KEY_CONNECT_PROMPT_SHOWN = "connect_prompt_shown";
     private static final String KEY_WARNED = "has_warned";
+    private static final String KEY_CHECK_UPDATES = "check_updates";
+    private static final String KEY_LAST_UPDATE_CHECK = "last_update_check";
 
     private AppPrefs() {
     }
@@ -94,5 +96,23 @@ public final class AppPrefs {
 
     public static void setWarned(@NonNull Context context, boolean warned) {
         get(context).edit().putBoolean(KEY_WARNED, warned).apply();
+    }
+
+    /** Whether the app should look for a newer release when it starts. */
+    public static boolean isCheckUpdates(@NonNull Context context) {
+        return get(context).getBoolean(KEY_CHECK_UPDATES, true);
+    }
+
+    public static void setCheckUpdates(@NonNull Context context, boolean enabled) {
+        get(context).edit().putBoolean(KEY_CHECK_UPDATES, enabled).apply();
+    }
+
+    /** Epoch millis of the last successful or attempted update check, or {@code 0}. */
+    public static long getLastUpdateCheck(@NonNull Context context) {
+        return get(context).getLong(KEY_LAST_UPDATE_CHECK, 0L);
+    }
+
+    public static void setLastUpdateCheck(@NonNull Context context, long epochMillis) {
+        get(context).edit().putLong(KEY_LAST_UPDATE_CHECK, epochMillis).apply();
     }
 }

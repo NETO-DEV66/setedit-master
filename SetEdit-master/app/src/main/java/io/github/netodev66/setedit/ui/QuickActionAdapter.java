@@ -63,10 +63,12 @@ public class QuickActionAdapter extends RecyclerView.Adapter<QuickActionAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull Holder holder, int position) {
+        io.github.netodev66.util.UiUtils.playBouncyListItem(holder.itemView, position);
         Action action = items.get(position);
         holder.icon.setImageResource(action.icon);
         holder.title.setText(action.title);
         holder.description.setText(action.description);
+        io.github.netodev66.util.UiUtils.attachPressBounce(holder.itemView);
         holder.itemView.setOnClickListener(v -> listener.onActionClick(action));
     }
 

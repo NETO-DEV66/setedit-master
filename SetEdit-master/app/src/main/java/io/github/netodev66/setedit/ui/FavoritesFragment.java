@@ -63,8 +63,10 @@ public class FavoritesFragment extends Fragment implements RowAdapter.Listener {
 
         RecyclerView recycler = view.findViewById(R.id.list_recycler);
         recycler.setLayoutManager(new LinearLayoutManager(requireContext()));
+        recycler.setItemAnimator(null);
         adapter = new RowAdapter(this, true, true, favorites());
         recycler.setAdapter(adapter);
+        io.github.netodev66.util.UiUtils.playBouncyScreenEntrance(recycler);
         load();
     }
 

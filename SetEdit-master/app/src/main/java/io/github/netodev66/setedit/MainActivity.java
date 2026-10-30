@@ -23,6 +23,9 @@ import io.github.netodev66.setedit.ui.SearchFragment;
 import io.github.netodev66.setedit.ui.SettingsFragment;
 import io.github.netodev66.setedit.ui.TableActivity;
 import io.github.netodev66.setedit.ui.Tables;
+import io.github.netodev66.setedit.update.UpdateActivity;
+import io.github.netodev66.setedit.update.UpdateInfo;
+import io.github.netodev66.setedit.update.UpdateManager;
 import io.github.netodev66.setedit.utils.ShellExecutor;
 import io.github.netodev66.util.UiUtils;
 
@@ -62,12 +65,55 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.Host
         }
         bottomNav.setSelectedItemId(tab);
         // Attach the listener after the initial selection so it is not re-shown needlessly.
-        bottomNav.setOnItemSelectedListener(item -> show(fragmentFor(item.getItemId())));
+        bottomNav.setOnItemSelectedListener(item -> {
+            bounce(item.getItemId());
+            return show(fragmentFor(item.getItemId()));
+        });
+
+        UiUtils.playBouncyScreenEntrance(findViewById(R.id.nav_host));
 
         if (!AppPrefs.isOnboarded(this)) {
             startActivity(new Intent(this, OnboardingActivity.class));
         }
         maybeReconnect();
+        maybeCheckForUpdates();
+    }
+
+    /** Looks for a newer release at most once a day, and offers it without blocking startup. */
+    private void maybeCheckForUpdates() {
+        if (!AppPrefs.isCheckUpdates(this)) return;
+        long last = AppPrefs.getLastUpdateCheck(this);
+        long dayMillis = 24L * 60L * 60L * 1000L;
+        if (System.currentTimeMillis() - last < dayMillis) return;
+        UpdateManager.check(this, info -> {
+            AppPrefs.setLastUpdateCheck(this, System.currentTimeMillis());
+            if (info.status == UpdateInfo.Status.AVAILABLE) {
+                offerUpdate(info);
+            }
+        });
+    }
+
+    private void offerUpdate(@NonNull UpdateInfo info) {
+        if (isFinishing() || isDestroyed()) return;
+        new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+                .setTitle(getString(R.string.update_available_title, info.version))
+                .setMessage(R.string.update_available_body)
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.update_download, (d, w) ->
+                        startActivity(UpdateActivity.intent(this)))
+                .show();
+    }
+
+    /** Springs the selected tab's icon so a tap feels acknowledged. */
+    private void bounce(int menuId) {
+        View item = bottomNav.findViewById(menuId);
+        if (item == null) return;
+        item.setScaleX(0.85f);
+        item.setScaleY(0.85f);
+        item.animate().scaleX(1f).scaleY(1f)
+                .setDuration(280L)
+                .setInterpolator(UiUtils.bouncy(this))
+                .start();
     }
 
     @NonNull
@@ -81,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.Host
 
     private boolean show(@NonNull Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
-                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                .setCustomAnimations(R.anim.nav_enter, R.anim.nav_exit)
                 .replace(R.id.nav_host, fragment)
                 .commit();
         return true;

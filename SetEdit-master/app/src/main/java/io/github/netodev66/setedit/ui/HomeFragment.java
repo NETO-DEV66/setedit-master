@@ -75,18 +75,23 @@ public class HomeFragment extends Fragment implements TableCardAdapter.Listener,
         super.onViewCreated(view, savedInstanceState);
         RecyclerView tables = view.findViewById(R.id.home_tables);
         tables.setLayoutManager(new LinearLayoutManager(requireContext()));
+        tables.setItemAnimator(null);
         tableAdapter = new TableCardAdapter(this, counts);
         tables.setAdapter(tableAdapter);
+        io.github.netodev66.util.UiUtils.playBouncyScreenEntrance(tables);
 
         RecyclerView quick = view.findViewById(R.id.home_quick);
         quick.setLayoutManager(new LinearLayoutManager(requireContext()));
+        quick.setItemAnimator(null);
         quick.setAdapter(new QuickActionAdapter(this, Arrays.asList(
                 new QuickActionAdapter.Action(R.drawable.ic_recipes,
                         R.string.home_action_recipes, R.string.home_action_recipes_desc, "recipes"),
                 new QuickActionAdapter.Action(R.drawable.ic_nav_backup,
                         R.string.home_action_backup, R.string.home_action_backup_desc, "backup"),
                 new QuickActionAdapter.Action(R.drawable.ic_nav_favorite,
-                        R.string.home_action_favorites, R.string.home_action_favorites_desc, "favorites")
+                        R.string.home_action_favorites, R.string.home_action_favorites_desc, "favorites"),
+                new QuickActionAdapter.Action(R.drawable.ic_update,
+                        R.string.update_row, R.string.update_row_desc, "update")
         )));
 
         view.findViewById(R.id.access_card).setOnClickListener(v -> {
@@ -183,6 +188,9 @@ public class HomeFragment extends Fragment implements TableCardAdapter.Listener,
                 break;
             case "favorites":
                 host.openTab(R.id.nav_favorites);
+                break;
+            case "update":
+                startActivity(io.github.netodev66.setedit.update.UpdateActivity.intent(requireContext()));
                 break;
             default:
                 break;

@@ -54,6 +54,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.Holder> {
 
     @Override
     public void onBindViewHolder(@NonNull Holder holder, int position) {
+        io.github.netodev66.util.UiUtils.playBouncyListItem(holder.itemView, position);
         Tables.Hit hit = items.get(position);
         holder.name.setText(hit.key);
         holder.value.setText(hit.value);
@@ -63,6 +64,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.Holder> {
         holder.star.setImageResource(favorite
                 ? R.drawable.ic_star_filled : R.drawable.ic_star_outline);
         holder.star.setOnClickListener(v -> listener.onStarClick(hit));
+        io.github.netodev66.util.UiUtils.attachPressBounce(holder.itemView);
         holder.itemView.setOnClickListener(v -> listener.onResultClick(hit));
     }
 
