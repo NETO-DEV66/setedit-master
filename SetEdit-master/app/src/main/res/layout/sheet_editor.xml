@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="24dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/sheet_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/sheet_edit_title"
+                android:textAppearance="?attr/textAppearanceHeadlineSmall" />
+
+            <ImageButton
+                android:id="@+id/sheet_star"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/add_favorite"
+                android:padding="8dp"
+                android:src="@drawable/ic_star_outline"
+                app:tint="?attr/colorOnSurfaceVariant" />
+
+            <ImageButton
+                android:id="@+id/sheet_help"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/help"
+                android:padding="8dp"
+                android:src="@drawable/ic_info"
+                app:tint="?attr/colorOnSurfaceVariant" />
+
+        </LinearLayout>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/sheet_key"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="monospace"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="?attr/colorPrimary"
+            android:textIsSelectable="true"
+            tools:text="window_animation_scale" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/sheet_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/bg_type_badge"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="3dp"
+            android:textAppearance="?attr/textAppearanceLabelMedium"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:visibility="gone"
+            tools:text="Number"
+            tools:visibility="visible" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/sheet_key_layout"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="@string/sheet_key_label"
+            android:visibility="gone">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/sheet_key_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:singleLine="true" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Text editor -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/sheet_value_layout"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="@string/sheet_value_label">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/sheet_value"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine"
+                android:textIsSelectable="true"
+                tools:text="0.5" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Boolean switch -->
+        <LinearLayout
+            android:id="@+id/sheet_bool_row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/sheet_bool"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/sheet_on" />
+
+        </LinearLayout>
+
+        <!-- Number stepper -->
+        <LinearLayout
+            android:id="@+id/sheet_number_row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/sheet_minus"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:contentDescription="@string/sheet_decrease"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:minWidth="0dp"
+                android:padding="0dp"
+                android:text="−"
+                android:textSize="22sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/sheet_plus"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="8dp"
+                android:contentDescription="@string/sheet_increase"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:minWidth="0dp"
+                android:padding="0dp"
+                android:text="+"
+                android:textSize="22sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/sheet_minus_10"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:minWidth="0dp"
+                android:text="−10" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/sheet_plus_10"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="0dp"
+                android:text="+10" />
+
+        </LinearLayout>
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/sheet_reboot"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/sheet_perform_on_reboot"
+            android:visibility="gone" />
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/sheet_shortcut"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/sheet_perform_via_shortcut"
+            android:visibility="gone" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/sheet_history_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/sheet_history"
+            android:textAppearance="?attr/textAppearanceTitleSmall"
+            android:textColor="?attr/colorOnSurface"
+            android:visibility="gone" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/sheet_history_body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textAppearance="?attr/textAppearanceBodySmall"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:visibility="gone"
+            tools:text="0.5 \u2192 1.0" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/sheet_revert"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/revert"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:gravity="end"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/sheet_delete"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/delete"
+                android:textColor="?attr/colorError"
+                android:visibility="gone" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/sheet_cancel"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="@string/cancel" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/sheet_save"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="@string/save" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

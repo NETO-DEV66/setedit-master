@@ -40,8 +40,8 @@
         android:banner="@mipmap/ic_banner"
         tools:ignore="UnusedAttribute">
         <activity
-            android:label="SetEdit"
-            android:name=".EditorActivity"
+            android:label="@string/app_name"
+            android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -51,6 +51,21 @@
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:label="@string/recipes_title"
+            android:name=".RecipesActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".OnboardingActivity"
+            android:exported="false" />
+
+        <activity
+            android:label="@string/app_short_name"
+            android:name=".ui.TableActivity"
+            android:exported="false" />
+
         <activity
             android:name=".shortcut.ShortcutActivity"
             android:launchMode="singleInstance"

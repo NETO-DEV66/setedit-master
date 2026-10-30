@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
+        app:liftOnScroll="true"
+        app:liftOnScrollTargetViewId="@id/list_recycler">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/list_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:navigationIcon="@drawable/ic_chevron_right"
+            app:titleTextAppearance="?attr/textAppearanceTitleLarge" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/list_search_layout"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginBottom="8dp"
+            android:hint="@string/table_search_hint"
+            app:endIconMode="clear_text"
+            app:startIconDrawable="@drawable/ic_nav_search">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/list_search"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:singleLine="true" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/list_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingBottom="96dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:listitem="@layout/item_setting" />
+
+    <LinearLayout
+        android:id="@+id/list_empty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="32dp"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="88dp"
+            android:layout_height="88dp"
+            android:background="@drawable/bg_empty_circle"
+            android:contentDescription="@null"
+            android:padding="24dp"
+            android:src="@drawable/ic_nav_search"
+            app:tint="?attr/colorOnSurfaceVariant" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/list_empty_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+            android:textColor="?attr/colorOnSurface"
+            tools:text="No favorites yet" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/list_empty_body"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            tools:text="Open a key and tap the star to pin it here." />
+
+    </LinearLayout>
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/list_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:indeterminate="true"
+        android:visibility="gone" />
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/list_fab"
+        style="@style/Widget.Material3.FloatingActionButton.Primary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:text="@string/new_item"
+        app:icon="@drawable/ic_add" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

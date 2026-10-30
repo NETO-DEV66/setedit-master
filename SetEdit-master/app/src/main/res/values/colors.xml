@@ -47,4 +47,8 @@
     <color name="colorSurfaceContainerHighest">#E5E0E9</color>
 
     <color name="semi_transparent">#10000000</color>
+
+    <!-- Extra surfaces used by the dashboard and status chips -->
+    <color name="brand_primary_container">#E5DEFF</color>
+    <color name="on_brand_primary_container">#170065</color>
 </resources>

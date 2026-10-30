@@ -81,4 +81,157 @@
     <string name="pairing_notification_action">Enter code</string>
     <string name="pairing_notification_wait">Pairing…</string>
     <string name="connect_use_notification">Enter the code from the notification</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_search">Search</string>
+    <string name="nav_favorites">Favorites</string>
+    <string name="nav_backup">Backup</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Home dashboard -->
+    <string name="home_greeting">Settings Database Editor</string>
+    <string name="home_subtitle">Browse and edit your device settings</string>
+    <string name="home_section_tables">Tables</string>
+    <string name="home_section_quick">Quick actions</string>
+    <string name="home_access_active">Privileged access active</string>
+    <string name="home_access_none">No privileged access — tap to set up</string>
+    <string name="home_access_root">Root</string>
+    <string name="home_access_shizuku">Shizuku</string>
+    <string name="home_access_adb">Wireless debugging</string>
+    <string name="home_keys_count">%1$d keys</string>
+    <string name="home_action_recipes">Recipes</string>
+    <string name="home_action_recipes_desc">One-tap tweaks</string>
+    <string name="home_action_backup">Backup &amp; restore</string>
+    <string name="home_action_backup_desc">Save or load all settings</string>
+    <string name="home_action_favorites">Favorites</string>
+    <string name="home_action_favorites_desc">Your pinned keys</string>
+
+    <!-- Table descriptions -->
+    <string name="table_desc_system">Core device behaviour and UI</string>
+    <string name="table_desc_secure">Security and privacy preferences</string>
+    <string name="table_desc_global">Device-wide toggles and state</string>
+    <string name="table_desc_properties">Low-level Android system properties</string>
+    <string name="table_desc_java">Runtime Java system properties</string>
+    <string name="table_desc_env">Process environment variables</string>
+    <string name="table_desc_boot">Actions SetEdit runs on reboot</string>
+    <string name="table_desc_shortcuts">Settings actions triggered by shortcuts</string>
+
+    <!-- Table browser -->
+    <string name="table_search_hint">Search keys…</string>
+    <string name="table_empty">No keys match “%1$s”</string>
+    <string name="table_loading">Loading…</string>
+    <string name="table_count">%1$d keys</string>
+    <string name="table_count_filtered">%1$d of %2$d keys</string>
+    <string name="read_only_badge">Read-only</string>
+    <string name="copy_key">Copy key</string>
+    <string name="copy_value">Copy value</string>
+    <string name="copy_command">Copy shell command</string>
+    <string name="add_favorite">Add to favorites</string>
+    <string name="remove_favorite">Remove from favorites</string>
+    <string name="copied">Copied</string>
+    <string name="revert">Revert</string>
+    <string name="revert_title">Revert change</string>
+    <string name="revert_message">Restore “%1$s” to “%2$s”?</string>
+    <string name="reverted">Reverted</string>
+    <string name="risky_key_title">Careful — sensitive key</string>
+    <string name="risky_key_message">“%1$s” affects important device behaviour. An incorrect value can cause instability. Continue only if you know what you are doing.</string>
+    <string name="continue_anyway">Continue</string>
+    <string name="edit_key">Edit</string>
+
+    <!-- Bottom sheet editor -->
+    <string name="sheet_edit_title">Edit value</string>
+    <string name="sheet_new_title">New key</string>
+    <string name="sheet_key_label">Key</string>
+    <string name="sheet_value_label">Value</string>
+    <string name="sheet_type_boolean">Boolean</string>
+    <string name="sheet_type_number">Number</string>
+    <string name="sheet_type_text">Text</string>
+    <string name="sheet_on">On (1)</string>
+    <string name="sheet_off">Off (0)</string>
+    <string name="sheet_decrease">Decrease</string>
+    <string name="sheet_increase">Increase</string>
+    <string name="sheet_more_options">More options</string>
+    <string name="sheet_history">Recent changes</string>
+    <string name="sheet_no_history">No recorded changes for this key</string>
+    <string name="sheet_perform_on_reboot">Apply on reboot</string>
+    <string name="sheet_perform_via_shortcut">Create a shortcut</string>
+
+    <!-- Search -->
+    <string name="search_hint">Search every table…</string>
+    <string name="search_prompt_title">Search all settings</string>
+    <string name="search_prompt_body">Type to search the system, secure and global tables at once. Results update as you type.</string>
+    <string name="search_no_results">No matches for “%1$s”</string>
+    <string name="search_results_count">%1$d results</string>
+    <string name="search_searching">Searching…</string>
+
+    <!-- Favorites -->
+    <string name="favorites_title">Favorites</string>
+    <string name="favorites_empty_title">No favorites yet</string>
+    <string name="favorites_empty_body">Open a key and tap the star to pin it here for quick access.</string>
+
+    <!-- Backup -->
+    <string name="backup_title">Backup &amp; restore</string>
+    <string name="backup_export_all">Export all settings</string>
+    <string name="backup_export_all_desc">Write every editable table to a single JSON file</string>
+    <string name="backup_import">Restore from a backup</string>
+    <string name="backup_import_desc">Apply the keys and values from a backup file</string>
+    <string name="backup_exporting">Exporting…</string>
+    <string name="backup_exported">Backup saved</string>
+    <string name="backup_import_confirm_title">Restore backup</string>
+    <string name="backup_import_confirm_body">This applies %1$d keys from the backup file to this device. Existing keys are overwritten. Continue?</string>
+    <string name="backup_import_done">Restored %1$d of %2$d keys</string>
+    <string name="backup_import_failed">Could not read that backup file</string>
+    <string name="backup_restore">Restore</string>
+    <string name="backup_section_export">Export</string>
+    <string name="backup_section_import">Import</string>
+
+    <!-- Recipes -->
+    <string name="recipes_title">Recipes</string>
+    <string name="recipes_subtitle">Ready-made tweaks you can apply in one tap</string>
+    <string name="recipe_apply">Apply</string>
+    <string name="recipe_applied">Applied “%1$s”</string>
+    <string name="recipe_failed">Could not apply “%1$s”</string>
+    <string name="recipe_needs_access">This recipe needs privileged access.</string>
+    <string name="recipe_confirm_title">Apply recipe</string>
+    <string name="recipe_confirm_body">Apply “%1$s”?\n\n%2$s</string>
+
+    <!-- Settings -->
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_dynamic_color">Dynamic color</string>
+    <string name="settings_dynamic_color_desc">Match the system wallpaper palette (Android 12+)</string>
+    <string name="settings_behavior">Behaviour</string>
+    <string name="settings_confirm_risky">Warn before editing sensitive keys</string>
+    <string name="settings_confirm_risky_desc">Show a confirmation for keys that affect device stability</string>
+    <string name="settings_auto_reconnect">Reconnect automatically</string>
+    <string name="settings_auto_reconnect_desc">Reconnect wireless debugging when the app opens</string>
+    <string name="settings_show_advanced">Show advanced tables</string>
+    <string name="settings_show_advanced_desc">Include properties, environment and boot tables</string>
+    <string name="settings_about">About</string>
+    <string name="settings_version">Version %1$s</string>
+    <string name="settings_replay_onboarding">Show the intro again</string>
+    <string name="settings_history">Change history</string>
+    <string name="settings_clear_history">Clear change history</string>
+    <string name="settings_history_cleared">Change history cleared</string>
+
+    <!-- Onboarding -->
+    <string name="onboard_title_1">Welcome to SetEdit</string>
+    <string name="onboard_body_1">Read and edit the hidden system, secure and global settings tables on your device — with a clean, modern interface.</string>
+    <string name="onboard_title_2">Grant access once</string>
+    <string name="onboard_body_2">Android 15 and later hide most settings from apps. SetEdit uses root, Shizuku or a one-time wireless-debugging connection to reach them. You only have to do this once.</string>
+    <string name="onboard_title_3">Works offline</string>
+    <string name="onboard_body_3">After that one-time connection, SetEdit keeps working with no Wi-Fi and no internet. Everything you change is applied on-device.</string>
+    <string name="onboard_next">Next</string>
+    <string name="onboard_skip">Skip</string>
+    <string name="onboard_start">Get started</string>
+
+    <!-- Generic -->
+    <string name="apply">Apply</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+    <string name="done">Done</string>
+    <string name="back">Back</string>
+    <string name="search">Search</string>
+    <string name="empty_generic">Nothing here yet</string>
+    <string name="loading">Loading…</string>
 </resources>

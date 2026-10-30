@@ -7,11 +7,13 @@ import android.view.Window;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.view.WindowCompat;
 
 import com.google.android.material.color.DynamicColors;
 import com.topjohnwu.superuser.Shell;
 
+import io.github.netodev66.setedit.data.AppPrefs;
 import io.github.netodev66.setedit.utils.ShellExecutor;
 
 public class App extends Application {
@@ -27,7 +29,10 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         ShellExecutor.init(this);
-        DynamicColors.applyToActivitiesIfAvailable(this);
+        AppCompatDelegate.setDefaultNightMode(AppPrefs.getThemeMode(this));
+        if (AppPrefs.isDynamicColor(this)) {
+            DynamicColors.applyToActivitiesIfAvailable(this);
+        }
         registerActivityLifecycleCallbacks(new ActivityAppearanceCallback());
         Shell.getShell();
     }
