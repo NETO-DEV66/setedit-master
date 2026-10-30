@@ -3,7 +3,7 @@
 A modern, Material 3 Settings Database Editor for Android.
 
 > Looking for the latest build? See the [project README](../README.md) or grab the
-> signed APK from the [latest release](https://github.com/NETO-DEV66/setedit-master/releases/latest/download/SetEdit-3.5-release.apk).
+> signed APK from the [latest release](https://github.com/NETO-DEV66/setedit-master/releases/latest/download/SetEdit-4.2-release.apk).
 
 [<img src="https://img.shields.io/badge/license-GPLv3-5B4CDB" alt="GPLv3" height="28" />](LICENSE)
 
