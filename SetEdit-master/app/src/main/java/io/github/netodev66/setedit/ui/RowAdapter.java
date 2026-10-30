@@ -16,14 +16,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.github.netodev66.setedit.R;
+import io.github.netodev66.setedit.data.RiskyKeys;
 
-/** A simple list of key/value rows with an optional type badge and a favorite star. */
+/** A simple list of key/value rows with an optional type badge, risky-key marker and favorite star. */
 public class RowAdapter extends RecyclerView.Adapter<RowAdapter.Holder> {
 
     public interface Listener {
         void onRowClick(int position, @NonNull String key, @NonNull String value);
 
         default void onStarClick(int position, @NonNull String key) {
+        }
+
+        /** Long-press: offer to copy the key, the value or the shell command. */
+        default void onRowLongClick(int position, @NonNull String key, @NonNull String value) {
         }
     }
 
@@ -108,9 +113,17 @@ public class RowAdapter extends RecyclerView.Adapter<RowAdapter.Holder> {
             holder.star.setVisibility(View.GONE);
         }
 
+        holder.risky.setVisibility(RiskyKeys.isRisky(key) ? View.VISIBLE : View.GONE);
+
         io.github.netodev66.util.UiUtils.attachPressBounce(holder.itemView);
         holder.itemView.setOnClickListener(v ->
                 listener.onRowClick(holder.getBindingAdapterPosition(), key, value));
+        holder.itemView.setOnLongClickListener(v -> {
+            int adapterPosition = holder.getBindingAdapterPosition();
+            if (adapterPosition == RecyclerView.NO_POSITION) return false;
+            listener.onRowLongClick(adapterPosition, key, value);
+            return true;
+        });
     }
 
     private CharSequence badgeText(@Nullable String value) {
@@ -135,6 +148,7 @@ public class RowAdapter extends RecyclerView.Adapter<RowAdapter.Holder> {
         final MaterialTextView value;
         final MaterialTextView badge;
         final ImageButton star;
+        final android.widget.ImageView risky;
 
         Holder(@NonNull View itemView) {
             super(itemView);
@@ -142,6 +156,7 @@ public class RowAdapter extends RecyclerView.Adapter<RowAdapter.Holder> {
             value = itemView.findViewById(R.id.txtValue);
             badge = itemView.findViewById(R.id.txtBadge);
             star = itemView.findViewById(R.id.btnStar);
+            risky = itemView.findViewById(R.id.imgRisky);
         }
     }
 }

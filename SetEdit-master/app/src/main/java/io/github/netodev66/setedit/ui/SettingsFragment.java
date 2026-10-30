@@ -21,10 +21,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.github.netodev66.setedit.BuildConfig;
+import io.github.netodev66.setedit.HistoryActivity;
 import io.github.netodev66.setedit.OnboardingActivity;
 import io.github.netodev66.setedit.R;
 import io.github.netodev66.setedit.data.AppPrefs;
-import io.github.netodev66.setedit.data.HistoryStore;
 
 /** Appearance, behaviour and about. */
 public class SettingsFragment extends Fragment {
@@ -72,15 +72,17 @@ public class SettingsFragment extends Fragment {
                 AppPrefs.setCheckUpdates(requireContext(), checked));
 
         view.findViewById(R.id.row_history).setOnClickListener(v ->
-                new MaterialAlertDialogBuilder(requireContext())
-                        .setTitle(R.string.settings_clear_history)
-                        .setNegativeButton(R.string.cancel, null)
-                        .setPositiveButton(R.string.settings_clear_history, (d, w) -> {
-                            HistoryStore.clear(requireContext());
-                            Toast.makeText(requireContext(), R.string.settings_history_cleared,
-                                    Toast.LENGTH_SHORT).show();
-                        })
-                        .show());
+                startActivity(new Intent(requireContext(), HistoryActivity.class)));
+
+        MaterialSwitch reduceMotion = view.findViewById(R.id.switch_reduce_motion);
+        reduceMotion.setChecked(AppPrefs.isReduceMotion(requireContext()));
+        reduceMotion.setOnCheckedChangeListener((b, checked) ->
+                AppPrefs.setReduceMotion(requireContext(), checked));
+
+        MaterialSwitch autoBackup = view.findViewById(R.id.switch_auto_backup);
+        autoBackup.setChecked(AppPrefs.isAutoBackup(requireContext()));
+        autoBackup.setOnCheckedChangeListener((b, checked) ->
+                AppPrefs.setAutoBackup(requireContext(), checked));
 
         MaterialTextView version = view.findViewById(R.id.version_value);
         version.setText(getString(R.string.settings_version, BuildConfig.VERSION_NAME));

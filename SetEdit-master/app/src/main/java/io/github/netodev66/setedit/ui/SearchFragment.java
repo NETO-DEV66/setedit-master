@@ -42,6 +42,7 @@ public class SearchFragment extends Fragment implements SearchAdapter.Listener {
     private View progress;
     @NonNull
     private String lastQuery = "";
+    private boolean matchValues;
     private int generation = 0;
     private final Handler debounce = new Handler(Looper.getMainLooper());
     private final Runnable pendingSearch = () -> search(lastQuery);
@@ -68,6 +69,14 @@ public class SearchFragment extends Fragment implements SearchAdapter.Listener {
         emptyTitle.setText(R.string.search_prompt_title);
         emptyBody.setText(R.string.search_prompt_body);
         emptyView.setVisibility(View.VISIBLE);
+
+        View options = view.findViewById(R.id.list_options);
+        options.setVisibility(View.VISIBLE);
+        com.google.android.material.chip.Chip matchValuesChip = view.findViewById(R.id.list_match_values);
+        matchValuesChip.setOnCheckedChangeListener((buttonView, checked) -> {
+            matchValues = checked;
+            if (!lastQuery.trim().isEmpty()) search(lastQuery);
+        });
 
         RecyclerView recycler = view.findViewById(R.id.list_recycler);
         recycler.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -108,7 +117,7 @@ public class SearchFragment extends Fragment implements SearchAdapter.Listener {
         progress.setVisibility(View.VISIBLE);
         Context appContext = requireContext().getApplicationContext();
         EXECUTOR.submit(() -> {
-            List<Tables.Hit> hits = Tables.searchSettings(appContext, query);
+            List<Tables.Hit> hits = Tables.searchSettings(appContext, query, matchValues);
             View view = getView();
             if (view == null || token != generation) return;
             view.post(() -> {

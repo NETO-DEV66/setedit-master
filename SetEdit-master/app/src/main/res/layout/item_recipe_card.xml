@@ -64,6 +64,18 @@
                     android:textColor="?attr/colorOnSurfaceVariant"
                     tools:text="Set window, transition and animator scales to 0.5x" />
 
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/recipe_category"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:background="@drawable/bg_type_badge"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="2dp"
+                    android:textAppearance="?attr/textAppearanceLabelSmall"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    tools:text="Animations" />
+
             </androidx.appcompat.widget.LinearLayoutCompat>
 
             <com.google.android.material.button.MaterialButton

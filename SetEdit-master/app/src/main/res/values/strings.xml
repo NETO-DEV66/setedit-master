@@ -164,6 +164,7 @@
     <string name="search_no_results">No matches for “%1$s”</string>
     <string name="search_results_count">%1$d results</string>
     <string name="search_searching">Searching…</string>
+    <string name="search_match_values">Also search values</string>
 
     <!-- Favorites -->
     <string name="favorites_title">Favorites</string>
@@ -195,6 +196,30 @@
     <string name="recipe_needs_access">This recipe needs privileged access.</string>
     <string name="recipe_confirm_title">Apply recipe</string>
     <string name="recipe_confirm_body">Apply “%1$s”?\n\n%2$s</string>
+
+    <!-- Built-in recipe titles and descriptions -->
+    <string name="recipe_fast_animations_title">Fast animations</string>
+    <string name="recipe_fast_animations_desc">Set window, transition and animator scales to 0.5x for snappier transitions.</string>
+    <string name="recipe_no_animations_title">Turn off animations</string>
+    <string name="recipe_no_animations_desc">Disable all system animations. Useful for older or slower devices.</string>
+    <string name="recipe_default_animations_title">Default animations</string>
+    <string name="recipe_default_animations_desc">Restore the standard 1x animation scales.</string>
+    <string name="recipe_show_touches_title">Show touch points</string>
+    <string name="recipe_show_touches_desc">Draw a dot wherever you touch the screen. Handy for demos and recordings.</string>
+    <string name="recipe_hide_touches_title">Hide touch points</string>
+    <string name="recipe_hide_touches_desc">Stop drawing touch dots and pointer location.</string>
+    <string name="recipe_stay_awake_title">Keep screen on while charging</string>
+    <string name="recipe_stay_awake_desc">Keep the display awake whenever the device is plugged in.</string>
+    <string name="recipe_screen_timeout_5m_title">Screen timeout: 5 minutes</string>
+    <string name="recipe_screen_timeout_5m_desc">Set the screen-off timeout to five minutes.</string>
+    <string name="recipe_screen_timeout_30s_title">Screen timeout: 30 seconds</string>
+    <string name="recipe_screen_timeout_30s_desc">Set the screen-off timeout to thirty seconds.</string>
+    <string name="recipe_rotation_on_title">Auto-rotate on</string>
+    <string name="recipe_rotation_on_desc">Enable automatic screen rotation.</string>
+    <string name="recipe_rotation_off_title">Auto-rotate off</string>
+    <string name="recipe_rotation_off_desc">Lock the screen to its current orientation.</string>
+    <string name="recipe_font_scale_title">Reset accessibility text scaling</string>
+    <string name="recipe_font_scale_desc">Return the system font scale to 1.0.</string>
 
     <!-- Settings -->
     <string name="settings_appearance">Appearance</string>
@@ -262,4 +287,92 @@
     <string name="search">Search</string>
     <string name="empty_generic">Nothing here yet</string>
     <string name="loading">Loading…</string>
+
+    <!-- Clipboard -->
+    <string name="copy_title">Copy</string>
+    <string name="copy_failed">Could not copy</string>
+
+    <!-- Sorting -->
+    <string name="sort">Sort</string>
+    <string name="sort_default">Default order</string>
+    <string name="sort_name_asc">Name (A–Z)</string>
+    <string name="sort_name_desc">Name (Z–A)</string>
+    <string name="sort_value_asc">Value (A–Z)</string>
+    <string name="sort_value_desc">Value (Z–A)</string>
+
+    <!-- Risky keys -->
+    <string name="risky_key_badge">Sensitive key</string>
+
+    <!-- Recipes: search, categories and custom recipes -->
+    <string name="recipes_search_hint">Search recipes…</string>
+    <string name="recipe_category_all">All</string>
+    <string name="recipe_category_animations">Animations</string>
+    <string name="recipe_category_display">Display</string>
+    <string name="recipe_category_touch">Touch</string>
+    <string name="recipe_category_accessibility">Accessibility</string>
+    <string name="recipe_category_custom">Custom</string>
+    <string name="recipe_empty">No recipes match “%1$s”</string>
+    <string name="recipe_new">New recipe</string>
+    <string name="recipe_new_title">Create a recipe</string>
+    <string name="recipe_name_hint">Recipe name</string>
+    <string name="recipe_table_hint">Table</string>
+    <string name="recipe_changes_hint">Changes, one per line: key=value</string>
+    <string name="recipe_changes_help">Enter one key=value per line. Every line is applied together when you run the recipe.</string>
+    <string name="recipe_create">Create</string>
+    <string name="recipe_created">Recipe created</string>
+    <string name="recipe_invalid">Add a name and at least one key=value line</string>
+    <string name="recipe_delete_title">Delete recipe</string>
+    <string name="recipe_delete_message">Delete “%1$s”?</string>
+    <string name="recipe_deleted">Recipe deleted</string>
+
+    <!-- Backup scopes -->
+    <string name="backup_export_scope_title">What to export</string>
+    <string name="backup_scope_all">All settings</string>
+    <string name="backup_scope_favorites">Favorites only</string>
+    <string name="backup_scope_system">System table</string>
+    <string name="backup_scope_secure">Secure table</string>
+    <string name="backup_scope_global">Global table</string>
+    <string name="backup_nothing_to_export">Nothing to export for that choice</string>
+
+    <!-- Automatic backup before a sensitive edit -->
+    <string name="settings_auto_backup">Auto-backup before sensitive edits</string>
+    <string name="settings_auto_backup_desc">Save a snapshot before changing a sensitive key</string>
+    <string name="auto_backup_saved">Snapshot saved before editing “%1$s”</string>
+    <string name="auto_backup_failed">Could not save a snapshot</string>
+
+    <!-- Reduce motion -->
+    <string name="settings_reduce_motion">Reduce motion</string>
+    <string name="settings_reduce_motion_desc">Turn off the bouncy screen and list animations</string>
+
+    <!-- Change history -->
+    <string name="history_view">View change history</string>
+    <string name="history_empty_title">No changes recorded</string>
+    <string name="history_empty_body">Edits you make will appear here so you can revert them.</string>
+    <string name="history_reverted">Reverted “%1$s”</string>
+    <string name="history_old_value">%1$s → %2$s</string>
+    <string name="history_deleted">deleted</string>
+    <string name="history_title">Change history</string>
+    <string name="history_subtitle">Every edit, newest first — tap one to revert it</string>
+    <string name="history_undo">Undo</string>
+    <string name="history_undo_title">Undo change</string>
+    <string name="history_undo_body">Restore “%1$s” to its previous value?</string>
+    <string name="history_undo_failed">Could not undo “%1$s”</string>
+    <string name="history_filter_all">All tables</string>
+    <string name="history_clear_title">Clear change history</string>
+    <string name="history_clear_body">This removes every recorded change. It does not change any setting.</string>
+
+    <!-- Quick settings tile -->
+    <string name="tile_label">SetEdit</string>
+
+    <!-- Home-screen widget -->
+    <string name="widget_label">SetEdit favorites</string>
+    <string name="widget_description">Your starred settings keys, one tap away</string>
+    <string name="widget_empty">No favorites yet</string>
+    <string name="widget_open">Open SetEdit</string>
+
+    <!-- Editor stepper symbols (locale-independent) -->
+    <string name="sheet_step_down_symbol" translatable="false">−</string>
+    <string name="sheet_step_up_symbol" translatable="false">+</string>
+    <string name="sheet_step_down_10_symbol" translatable="false">−10</string>
+    <string name="sheet_step_up_10_symbol" translatable="false">+10</string>
 </resources>

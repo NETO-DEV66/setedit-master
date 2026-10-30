@@ -7,8 +7,10 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -50,7 +52,7 @@ public class RecipeTest {
 
     @Test
     public void everyChangeTargetsTheTableThePlatformReads() {
-        for (Recipe recipe : Recipe.all()) {
+        for (Recipe recipe : Recipe.builtIn()) {
             for (Recipe.Change change : recipe.changes) {
                 String expected = KEY_TABLE.get(change.key);
                 assertNotNull("no expected table recorded for " + change.key, expected);
@@ -63,15 +65,24 @@ public class RecipeTest {
     @Test
     public void idsAreUnique() {
         Set<String> seen = new HashSet<>();
-        for (Recipe recipe : Recipe.all()) {
+        for (Recipe recipe : Recipe.builtIn()) {
             assertTrue("duplicate recipe id " + recipe.id, seen.add(recipe.id));
         }
     }
 
     @Test
     public void everyRecipeHasAtLeastOneChange() {
-        for (Recipe recipe : Recipe.all()) {
+        for (Recipe recipe : Recipe.builtIn()) {
             assertFalse(recipe.id + " has no changes", recipe.changes.isEmpty());
+        }
+    }
+
+    @Test
+    public void everyBuiltInRecipeHasACategoryAndIcon() {
+        for (Recipe recipe : Recipe.builtIn()) {
+            assertFalse(recipe.id + " is custom", recipe.isCustom());
+            assertNotNull(recipe.id + " has no icon", recipe.icon);
+            assertTrue(recipe.id + " has an empty icon", recipe.icon.length() > 0);
         }
     }
 
@@ -87,5 +98,23 @@ public class RecipeTest {
         for (Recipe.Change change : defaults.changes) {
             assertEquals("1.0", change.value);
         }
+    }
+
+    @Test
+    public void customRecipeKeepsItsOwnText() {
+        List<Recipe.Change> changes = new ArrayList<>();
+        changes.add(new Recipe.Change(SettingsType.SYSTEM_SETTINGS, "k", "v"));
+        Recipe recipe = Recipe.custom("custom_1", "My tweak", "Does a thing", changes);
+        assertTrue(recipe.isCustom());
+        assertEquals("My tweak", recipe.title(null));
+        assertEquals("Does a thing", recipe.description(null));
+    }
+
+    @Test
+    public void customRecipeHasNoBuiltInStringResources() {
+        List<Recipe.Change> changes = new ArrayList<>();
+        changes.add(new Recipe.Change(SettingsType.SYSTEM_SETTINGS, "k", "v"));
+        Recipe recipe = Recipe.custom("custom_1", "T", "D", changes);
+        assertEquals(Recipe.Category.CUSTOM, recipe.category);
     }
 }

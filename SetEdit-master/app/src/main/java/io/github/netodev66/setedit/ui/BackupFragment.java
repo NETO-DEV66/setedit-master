@@ -28,7 +28,7 @@ import io.github.netodev66.setedit.R;
 import io.github.netodev66.setedit.data.BackupManager;
 import io.github.netodev66.setedit.data.Recipe;
 
-/** Exports and restores all settings, and offers the built-in recipes. */
+/** Exports and restores settings, and offers the built-in recipes. */
 public class BackupFragment extends Fragment implements RecipeAdapter.Listener {
 
     private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor(runnable -> {
@@ -37,11 +37,14 @@ public class BackupFragment extends Fragment implements RecipeAdapter.Listener {
         return thread;
     });
 
+    /** The scope chosen in the export dialog, applied once the user picks a file. */
+    private BackupManager.Scope pendingScope = BackupManager.Scope.ALL;
+
     private final ActivityResultLauncher<String> exportLauncher = registerForActivityResult(
             new ActivityResultContracts.CreateDocument("application/json"),
             uri -> {
                 if (uri == null) return;
-                exportTo(uri);
+                exportTo(uri, pendingScope);
             });
 
     private final ActivityResultLauncher<String[]> importLauncher = registerForActivityResult(
@@ -66,29 +69,54 @@ public class BackupFragment extends Fragment implements RecipeAdapter.Listener {
 
         MaterialButton export = view.findViewById(R.id.backup_export);
         MaterialButton restore = view.findViewById(R.id.backup_import);
-        export.setOnClickListener(v -> exportLauncher.launch(fileName()));
+        export.setOnClickListener(v -> showExportScopeDialog());
         restore.setOnClickListener(v -> importLauncher.launch(new String[]{"application/json", "*/*"}));
 
         RecyclerView recipes = view.findViewById(R.id.backup_recipes);
         recipes.setLayoutManager(new LinearLayoutManager(requireContext()));
         recipes.setItemAnimator(null);
-        recipes.setAdapter(new RecipeAdapter(this, Recipe.all()));
+        recipes.setAdapter(new RecipeAdapter(requireContext(), this, Recipe.all(requireContext())));
         io.github.netodev66.util.UiUtils.playBouncyScreenEntrance(recipes);
         io.github.netodev66.util.UiUtils.attachPressBounce(export);
         io.github.netodev66.util.UiUtils.attachPressBounce(restore);
+    }
+
+    /** Asks what to include before opening the file picker. */
+    private void showExportScopeDialog() {
+        String[] labels = {
+                getString(R.string.backup_scope_all),
+                getString(R.string.backup_scope_favorites),
+                getString(R.string.backup_scope_system),
+                getString(R.string.backup_scope_secure),
+                getString(R.string.backup_scope_global)
+        };
+        BackupManager.Scope[] scopes = {
+                BackupManager.Scope.ALL,
+                BackupManager.Scope.FAVORITES,
+                BackupManager.Scope.SYSTEM,
+                BackupManager.Scope.SECURE,
+                BackupManager.Scope.GLOBAL
+        };
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.backup_export_scope_title)
+                .setItems(labels, (dialog, which) -> {
+                    pendingScope = scopes[which];
+                    exportLauncher.launch(fileName());
+                })
+                .show();
     }
 
     private String fileName() {
         return "SetEdit-backup-" + System.currentTimeMillis() + ".json";
     }
 
-    private void exportTo(@NonNull android.net.Uri uri) {
+    private void exportTo(@NonNull android.net.Uri uri, @NonNull BackupManager.Scope scope) {
         Context appContext = requireContext().getApplicationContext();
         Toast.makeText(requireContext(), R.string.backup_exporting, Toast.LENGTH_SHORT).show();
         EXECUTOR.submit(() -> {
-            try (OutputStream os = requireContext().getContentResolver().openOutputStream(uri)) {
+            try (OutputStream os = appContext.getContentResolver().openOutputStream(uri)) {
                 if (os == null) throw new java.io.IOException();
-                BackupManager.export(appContext, os);
+                BackupManager.export(appContext, os, scope);
                 View view = getView();
                 if (view != null) {
                     view.post(() -> Toast.makeText(requireContext(), R.string.backup_exported,
@@ -108,7 +136,7 @@ public class BackupFragment extends Fragment implements RecipeAdapter.Listener {
         Context appContext = requireContext().getApplicationContext();
         EXECUTOR.submit(() -> {
             String json;
-            try (InputStream is = requireContext().getContentResolver().openInputStream(uri)) {
+            try (InputStream is = appContext.getContentResolver().openInputStream(uri)) {
                 json = is == null ? null : BackupManager.readAll(is);
             } catch (Throwable th) {
                 json = null;
@@ -149,7 +177,8 @@ public class BackupFragment extends Fragment implements RecipeAdapter.Listener {
     public void onApply(@NonNull Recipe recipe) {
         new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.recipe_confirm_title)
-                .setMessage(getString(R.string.recipe_confirm_body, recipe.title, recipe.description))
+                .setMessage(getString(R.string.recipe_confirm_body, recipe.title(requireContext()),
+                        recipe.description(requireContext())))
                 .setNegativeButton(R.string.cancel, null)
                 .setPositiveButton(R.string.recipe_apply, (d, w) -> applyRecipe(recipe))
                 .show();
@@ -169,8 +198,8 @@ public class BackupFragment extends Fragment implements RecipeAdapter.Listener {
             View view = getView();
             if (view != null) {
                 view.post(() -> Toast.makeText(requireContext(),
-                        ok ? getString(R.string.recipe_applied, recipe.title)
-                                : getString(R.string.recipe_failed, recipe.title),
+                        ok ? getString(R.string.recipe_applied, recipe.title(requireContext()))
+                                : getString(R.string.recipe_failed, recipe.title(requireContext())),
                         Toast.LENGTH_SHORT).show());
             }
         });

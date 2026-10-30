@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- RemoteViews are inflated by the launcher's context, which does not carry SetEdit's theme,
+     so the widget uses concrete color resources rather than theme attributes. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/colorSurfaceContainer" />
+    <corners android:radius="20dp" />
+</shape>

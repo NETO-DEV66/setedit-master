@@ -67,6 +67,7 @@ public final class FavoritesStore {
                 .edit()
                 .putStringSet(KEY_SET, new LinkedHashSet<>(set))
                 .apply();
+        io.github.netodev66.setedit.widget.SetEditWidgetProvider.refreshAll(context);
     }
 
     /** Splits a stored token back into its table and key, or {@code null} when malformed. */

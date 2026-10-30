@@ -25,6 +25,8 @@ public final class AppPrefs {
     private static final String KEY_WARNED = "has_warned";
     private static final String KEY_CHECK_UPDATES = "check_updates";
     private static final String KEY_LAST_UPDATE_CHECK = "last_update_check";
+    private static final String KEY_REDUCE_MOTION = "reduce_motion";
+    private static final String KEY_AUTO_BACKUP = "auto_backup";
 
     private AppPrefs() {
     }
@@ -114,5 +116,23 @@ public final class AppPrefs {
 
     public static void setLastUpdateCheck(@NonNull Context context, long epochMillis) {
         get(context).edit().putLong(KEY_LAST_UPDATE_CHECK, epochMillis).apply();
+    }
+
+    /** Whether the bouncy screen/list animations should be skipped. */
+    public static boolean isReduceMotion(@NonNull Context context) {
+        return get(context).getBoolean(KEY_REDUCE_MOTION, false);
+    }
+
+    public static void setReduceMotion(@NonNull Context context, boolean enabled) {
+        get(context).edit().putBoolean(KEY_REDUCE_MOTION, enabled).apply();
+    }
+
+    /** Whether a snapshot should be saved automatically before a sensitive key is changed. */
+    public static boolean isAutoBackup(@NonNull Context context) {
+        return get(context).getBoolean(KEY_AUTO_BACKUP, true);
+    }
+
+    public static void setAutoBackup(@NonNull Context context, boolean enabled) {
+        get(context).edit().putBoolean(KEY_AUTO_BACKUP, enabled).apply();
     }
 }

@@ -1,7 +1,5 @@
 package io.github.netodev66.setedit.ui.editor;
 
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -16,7 +14,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.util.Pair;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.button.MaterialButton;
@@ -27,7 +24,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.textview.MaterialTextView;
 
-import java.util.Locale;
+import java.io.File;
 
 import io.github.netodev66.setedit.R;
 import io.github.netodev66.setedit.TableType;
@@ -35,13 +32,14 @@ import io.github.netodev66.setedit.TableTypeInt;
 import io.github.netodev66.setedit.boot.ActionItem;
 import io.github.netodev66.setedit.boot.BootUtils;
 import io.github.netodev66.setedit.data.AppPrefs;
+import io.github.netodev66.setedit.data.AutoBackup;
 import io.github.netodev66.setedit.data.FavoritesStore;
 import io.github.netodev66.setedit.data.HistoryStore;
 import io.github.netodev66.setedit.data.RiskyKeys;
-import io.github.netodev66.setedit.data.TableMeta;
 import io.github.netodev66.setedit.shortcut.ShortcutUtils;
 import io.github.netodev66.setedit.ui.Tables;
 import io.github.netodev66.setedit.ui.ValueType;
+import io.github.netodev66.setedit.util.ClipboardUtils;
 import io.github.netodev66.setedit.utils.ActionResult;
 
 /**
@@ -78,6 +76,13 @@ public class EditorSheet extends BottomSheetDialogFragment {
 
     @Nullable
     private Listener listener;
+
+    private static final java.util.concurrent.ExecutorService BACKUP_EXECUTOR =
+            java.util.concurrent.Executors.newSingleThreadExecutor(runnable -> {
+                Thread thread = new Thread(runnable, "setedit-auto-backup");
+                thread.setDaemon(true);
+                return thread;
+            });
 
     @TableTypeInt
     private int tableType;
@@ -156,6 +161,7 @@ public class EditorSheet extends BottomSheetDialogFragment {
         MaterialTextView title = view.findViewById(R.id.sheet_title);
         MaterialTextView keyText = view.findViewById(R.id.sheet_key);
         MaterialTextView typeText = view.findViewById(R.id.sheet_type);
+        MaterialTextView riskyBadge = view.findViewById(R.id.sheet_risky_badge);
         MaterialTextView historyHeader = view.findViewById(R.id.sheet_history_header);
         MaterialTextView historyBody = view.findViewById(R.id.sheet_history_body);
         keyInput = view.findViewById(R.id.sheet_key_input);
@@ -172,6 +178,7 @@ public class EditorSheet extends BottomSheetDialogFragment {
         MaterialButton revertButton = view.findViewById(R.id.sheet_revert);
         ImageButton starButton = view.findViewById(R.id.sheet_star);
         ImageButton helpButton = view.findViewById(R.id.sheet_help);
+        ImageButton copyButton = view.findViewById(R.id.sheet_copy);
         TextInputLayout keyLayout = view.findViewById(R.id.sheet_key_layout);
 
         title.setText(isNew ? R.string.sheet_new_title : R.string.sheet_edit_title);
@@ -180,6 +187,8 @@ public class EditorSheet extends BottomSheetDialogFragment {
         keyLayout.setVisibility(isNew ? View.VISIBLE : View.GONE);
         boolean canFavorite = !isNew && Tables.isSettingsTable(tableType);
         helpButton.setVisibility(isNew ? View.GONE : View.VISIBLE);
+        copyButton.setVisibility(isNew ? View.GONE : View.VISIBLE);
+        riskyBadge.setVisibility(!isNew && RiskyKeys.isRisky(key) ? View.VISIBLE : View.GONE);
         starButton.setVisibility(canFavorite ? View.VISIBLE : View.GONE);
 
         // Spring the sheet's content in for a lively open.
@@ -216,6 +225,8 @@ public class EditorSheet extends BottomSheetDialogFragment {
         if (helpButton.getVisibility() == View.VISIBLE) {
             helpButton.setOnClickListener(v -> openHelp());
         }
+
+        copyButton.setOnClickListener(v -> showCopyDialog());
 
         if (canSetOnReboot && (canEdit || canDelete)) {
             rebootBox.setVisibility(View.VISIBLE);
@@ -293,15 +304,37 @@ public class EditorSheet extends BottomSheetDialogFragment {
 
     private void commit(@NonNull String newKey, @NonNull String newValue,
                         @NonNull MaterialCheckBox rebootBox, @NonNull MaterialCheckBox shortcutBox) {
+        boolean risky = !isNew && RiskyKeys.isRisky(newKey);
+        if (risky && AppPrefs.isAutoBackup(requireContext())) {
+            // Snapshot on a background thread. It is a safety net, not a prerequisite, so the write
+            // does not wait for it — and nothing here touches the fragment once it is dismissed.
+            Context appContext = requireContext().getApplicationContext();
+            String reason = newKey;
+            BACKUP_EXECUTOR.submit(() -> {
+                File snapshot = AutoBackup.snapshot(appContext, reason);
+                if (snapshot != null) {
+                    new android.os.Handler(android.os.Looper.getMainLooper()).post(() ->
+                            Toast.makeText(appContext,
+                                    appContext.getString(R.string.auto_backup_saved, reason),
+                                    Toast.LENGTH_SHORT).show());
+                }
+            });
+        }
+        finishCommit(newKey, newValue, canSetOnReboot && rebootBox.isChecked(),
+                canCreateShortcut && shortcutBox.isChecked());
+    }
+
+    private void finishCommit(@NonNull String newKey, @NonNull String newValue,
+                              boolean reboot, boolean shortcut) {
         String oldValue = value;
         if (listener != null) listener.onSave(newKey, newValue, isNew);
         HistoryStore.record(requireContext(), tableName(), newKey, oldValue, newValue);
-        if (canSetOnReboot && rebootBox.isChecked()) {
+        if (reboot) {
             BootUtils.add(requireContext(), new ActionItem(
                     isNew ? ActionResult.TYPE_CREATE : ActionResult.TYPE_UPDATE,
                     tableName(), newKey, newValue));
         }
-        if (canCreateShortcut && shortcutBox.isChecked()) {
+        if (shortcut) {
             ShortcutUtils.displayShortcutTypeChooserDialog(
                     (androidx.fragment.app.FragmentActivity) requireActivity(),
                     new ActionItem(isNew ? ActionResult.TYPE_CREATE : ActionResult.TYPE_UPDATE,
@@ -309,6 +342,29 @@ public class EditorSheet extends BottomSheetDialogFragment {
         }
         if (listener != null) listener.onEdited();
         dismiss();
+    }
+
+    /** Offers to copy the key, the current value or the shell command that sets it. */
+    private void showCopyDialog() {
+        CharSequence[] options = {
+                getString(R.string.copy_key),
+                getString(R.string.copy_value),
+                getString(R.string.copy_command)
+        };
+        String currentValue = text(valueInput);
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.copy_title)
+                .setItems(options, (dialog, which) -> {
+                    if (which == 0) {
+                        ClipboardUtils.copy(requireContext(), key, key);
+                    } else if (which == 1) {
+                        ClipboardUtils.copy(requireContext(), key, currentValue);
+                    } else {
+                        ClipboardUtils.copy(requireContext(), key,
+                                Tables.shellCommand(tableType, key, currentValue));
+                    }
+                })
+                .show();
     }
 
     private void confirmDelete(@NonNull MaterialCheckBox rebootBox, @NonNull MaterialCheckBox shortcutBox) {

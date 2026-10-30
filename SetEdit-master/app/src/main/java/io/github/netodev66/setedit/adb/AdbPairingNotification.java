@@ -114,7 +114,12 @@ public final class AdbPairingNotification {
     }
 
     private static void post(@NonNull Context appContext, @NonNull NotificationCompat.Builder builder) {
-        NotificationManagerCompat.from(appContext).notify(NOTIFICATION_ID, builder.build());
+        if (!canNotify(appContext)) return;
+        try {
+            NotificationManagerCompat.from(appContext).notify(NOTIFICATION_ID, builder.build());
+        } catch (SecurityException ignored) {
+            // The user revoked POST_NOTIFICATIONS between the check above and the post.
+        }
     }
 
     /** Creates the high-importance channel that carries the reply field. */

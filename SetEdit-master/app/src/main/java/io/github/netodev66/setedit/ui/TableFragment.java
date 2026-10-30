@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textview.MaterialTextView;
@@ -28,9 +29,11 @@ import java.util.concurrent.Executors;
 
 import io.github.netodev66.setedit.R;
 import io.github.netodev66.setedit.TableTypeInt;
+import io.github.netodev66.setedit.data.AppPrefs;
 import io.github.netodev66.setedit.data.FavoritesStore;
 import io.github.netodev66.setedit.data.TableMeta;
 import io.github.netodev66.setedit.ui.editor.EditorSheet;
+import io.github.netodev66.setedit.util.ClipboardUtils;
 import io.github.netodev66.setedit.utils.SettingsUtils;
 
 /** Browses a single table: search, edit, favorite, create and delete. */
@@ -55,6 +58,8 @@ public class TableFragment extends Fragment implements RowAdapter.Listener {
     private String query = "";
     @NonNull
     private List<Pair<String, String>> allRows = new ArrayList<>();
+    @NonNull
+    private SortMode sortMode = SortMode.DEFAULT;
     private boolean loading;
     private final Handler debounce = new Handler(Looper.getMainLooper());
     private final Runnable pendingFilter = this::applyFilter;
@@ -83,6 +88,14 @@ public class TableFragment extends Fragment implements RowAdapter.Listener {
         MaterialToolbar toolbar = view.findViewById(R.id.list_toolbar);
         toolbar.setTitle(meta.titleRes);
         toolbar.setNavigationOnClickListener(v -> requireActivity().finish());
+        toolbar.inflateMenu(R.menu.menu_table);
+        toolbar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.action_sort) {
+                showSortDialog();
+                return true;
+            }
+            return false;
+        });
 
         emptyView = view.findViewById(R.id.list_empty);
         emptyTitle = view.findViewById(R.id.list_empty_title);
@@ -171,6 +184,7 @@ public class TableFragment extends Fragment implements RowAdapter.Listener {
                 filtered.add(row);
             }
         }
+        filtered = SortMode.apply(sortMode, filtered);
         adapter.submit(filtered);
         boolean isEmpty = filtered.isEmpty();
         emptyView.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
@@ -182,6 +196,47 @@ public class TableFragment extends Fragment implements RowAdapter.Listener {
             }
             emptyBody.setText("");
         }
+    }
+
+    /** Lets the user pick how the rows are ordered; the choice is applied immediately. */
+    private void showSortDialog() {
+        SortMode[] modes = SortMode.values();
+        String[] labels = new String[modes.length];
+        int checked = 0;
+        for (int i = 0; i < modes.length; i++) {
+            labels[i] = getString(modes[i].labelRes);
+            if (modes[i] == sortMode) checked = i;
+        }
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.sort)
+                .setSingleChoiceItems(labels, checked, (dialog, which) -> {
+                    sortMode = modes[which];
+                    applyFilter();
+                    dialog.dismiss();
+                })
+                .show();
+    }
+
+    /** Offers to copy the key, the value or the shell command for a long-pressed row. */
+    private void showCopyDialog(@NonNull String key, @NonNull String value) {
+        CharSequence[] options = {
+                getString(R.string.copy_key),
+                getString(R.string.copy_value),
+                getString(R.string.copy_command)
+        };
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.copy_title)
+                .setItems(options, (dialog, which) -> {
+                    if (which == 0) {
+                        ClipboardUtils.copy(requireContext(), key, key);
+                    } else if (which == 1) {
+                        ClipboardUtils.copy(requireContext(), key, value);
+                    } else {
+                        ClipboardUtils.copy(requireContext(), key,
+                                Tables.shellCommand(tableType, key, value));
+                    }
+                })
+                .show();
     }
 
     @Override
@@ -222,6 +277,11 @@ public class TableFragment extends Fragment implements RowAdapter.Listener {
         if (!Tables.isSettingsTable(tableType)) return;
         FavoritesStore.toggle(requireContext(), Tables.settingsTypeOf(tableType), key);
         if (adapter != null) adapter.toggleFavorite(position, key);
+    }
+
+    @Override
+    public void onRowLongClick(int position, @NonNull String key, @NonNull String value) {
+        showCopyDialog(key, value);
     }
 
     private void writeAsync(@NonNull String key, @NonNull String value, boolean isNew) {

@@ -20,4 +20,9 @@
         <item>@string/theme_night</item>
         <item>@string/theme_battery</item>
     </string-array>
+    <string-array name="recipe_tables">
+        <item>@string/system_table</item>
+        <item>@string/secure_table</item>
+        <item>@string/global_table</item>
+    </string-array>
 </resources>

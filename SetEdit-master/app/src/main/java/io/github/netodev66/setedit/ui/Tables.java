@@ -94,6 +94,18 @@ public final class Tables {
     /** Searches the system, secure and global tables for keys containing {@code query}. */
     @NonNull
     public static List<Hit> searchSettings(@NonNull Context context, @NonNull String query) {
+        return searchSettings(context, query, false);
+    }
+
+    /**
+     * Searches the system, secure and global tables.
+     *
+     * @param matchValues when {@code true} a row also matches when its value contains the query,
+     *                    so a key can be found from a value the user remembers.
+     */
+    @NonNull
+    public static List<Hit> searchSettings(@NonNull Context context, @NonNull String query,
+                                           boolean matchValues) {
         String needle = query.trim().toLowerCase(java.util.Locale.ROOT);
         List<Hit> hits = new ArrayList<>();
         if (needle.isEmpty()) return hits;
@@ -104,11 +116,47 @@ public final class Tables {
             if (items == null) continue;
             for (Pair<String, String> item : items) {
                 String key = item.first == null ? "" : item.first;
-                if (key.toLowerCase(java.util.Locale.ROOT).contains(needle)) {
-                    hits.add(new Hit(tableType, key, item.second == null ? "" : item.second));
+                String value = item.second == null ? "" : item.second;
+                boolean keyMatch = key.toLowerCase(java.util.Locale.ROOT).contains(needle);
+                boolean valueMatch = matchValues
+                        && value.toLowerCase(java.util.Locale.ROOT).contains(needle);
+                if (keyMatch || valueMatch) {
+                    hits.add(new Hit(tableType, key, value));
                 }
             }
         }
         return hits;
+    }
+
+    /**
+     * The shell command that would set {@code key} to {@code value} in this table, for copying into
+     * a terminal. Mirrors the command the editor's help link searches for.
+     */
+    @NonNull
+    public static String shellCommand(@TableTypeInt int tableType, @NonNull String key,
+                                      @Nullable String value) {
+        String prefix;
+        switch (tableType) {
+            case TableTypeInt.TABLE_SECURE:
+                prefix = "settings put secure ";
+                break;
+            case TableTypeInt.TABLE_GLOBAL:
+                prefix = "settings put global ";
+                break;
+            case TableTypeInt.TABLE_PROPERTIES:
+                prefix = "setprop ";
+                break;
+            default:
+                prefix = "settings put system ";
+                break;
+        }
+        if (value == null) return prefix + quoteArg(key);
+        return prefix + quoteArg(key) + " " + quoteArg(value);
+    }
+
+    /** Single-quotes an argument for a POSIX shell, escaping embedded quotes. */
+    @NonNull
+    private static String quoteArg(@NonNull String value) {
+        return "'" + value.replace("'", "'\\''") + "'";
     }
 }

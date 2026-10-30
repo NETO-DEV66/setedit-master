@@ -49,6 +49,16 @@
                 android:src="@drawable/ic_info"
                 app:tint="?attr/colorOnSurfaceVariant" />
 
+            <ImageButton
+                android:id="@+id/sheet_copy"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/copy_title"
+                android:padding="8dp"
+                android:src="@drawable/ic_copy"
+                app:tint="?attr/colorOnSurfaceVariant" />
+
         </LinearLayout>
 
         <com.google.android.material.textview.MaterialTextView
@@ -74,6 +84,20 @@
             android:textColor="?attr/colorOnSurfaceVariant"
             android:visibility="gone"
             tools:text="Number"
+            tools:visibility="visible" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/sheet_risky_badge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/bg_type_badge"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="3dp"
+            android:text="@string/risky_key_badge"
+            android:textAppearance="?attr/textAppearanceLabelMedium"
+            android:textColor="?attr/colorError"
+            android:visibility="gone"
             tools:visibility="visible" />
 
         <com.google.android.material.textfield.TextInputLayout
@@ -152,7 +176,7 @@
                 android:insetBottom="0dp"
                 android:minWidth="0dp"
                 android:padding="0dp"
-                android:text="−"
+                android:text="@string/sheet_step_down_symbol"
                 android:textSize="22sp" />
 
             <com.google.android.material.button.MaterialButton
@@ -166,7 +190,7 @@
                 android:insetBottom="0dp"
                 android:minWidth="0dp"
                 android:padding="0dp"
-                android:text="+"
+                android:text="@string/sheet_step_up_symbol"
                 android:textSize="22sp" />
 
             <com.google.android.material.button.MaterialButton
@@ -176,7 +200,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:minWidth="0dp"
-                android:text="−10" />
+                android:text="@string/sheet_step_down_10_symbol" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/sheet_plus_10"
@@ -184,7 +208,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:minWidth="0dp"
-                android:text="+10" />
+                android:text="@string/sheet_step_up_10_symbol" />
 
         </LinearLayout>
 

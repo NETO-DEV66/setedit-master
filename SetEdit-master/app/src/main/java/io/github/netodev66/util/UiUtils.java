@@ -62,6 +62,12 @@ public final class UiUtils {
 
     public static void playBouncyEntrance(@NonNull View view, float fromScale, long duration) {
         Context context = view.getContext();
+        if (reduceMotion(context)) {
+            view.setAlpha(1f);
+            view.setScaleX(1f);
+            view.setScaleY(1f);
+            return;
+        }
         view.setAlpha(0f);
         view.setScaleX(fromScale);
         view.setScaleY(fromScale);
@@ -73,6 +79,36 @@ public final class UiUtils {
                 .setInterpolator(bouncy(context))
                 .start();
     }
+
+    /**
+     * Whether the user asked to reduce motion, either through SetEdit's own switch or the system
+     * accessibility setting. Checked here so every animated entry point honours it at once.
+     *
+     * <p>The system value is read through the resolver, which is not free, and this runs for every
+     * bound list row. The answer is cached for a second so a scroll does not hammer the provider.
+     */
+    public static boolean reduceMotion(@NonNull Context context) {
+        try {
+            if (io.github.netodev66.setedit.data.AppPrefs.isReduceMotion(context)) return true;
+        } catch (Throwable ignored) {
+        }
+        long now = android.os.SystemClock.elapsedRealtime();
+        if (now - REDUCE_MOTION_AT < 1000L) return REDUCE_MOTION_VALUE;
+        boolean reduced;
+        try {
+            float scale = android.provider.Settings.Global.getFloat(context.getContentResolver(),
+                    android.provider.Settings.Global.ANIMATOR_DURATION_SCALE, 1f);
+            reduced = scale == 0f;
+        } catch (Throwable ignored) {
+            reduced = false;
+        }
+        REDUCE_MOTION_VALUE = reduced;
+        REDUCE_MOTION_AT = now;
+        return reduced;
+    }
+
+    private static volatile boolean REDUCE_MOTION_VALUE;
+    private static volatile long REDUCE_MOTION_AT = -10000L;
 
     /** The shared overshoot interpolator, loaded once per process. */
     @NonNull
@@ -96,6 +132,11 @@ public final class UiUtils {
     public static void playBouncyListItem(@NonNull View view, int position) {
         if (Boolean.TRUE.equals(view.getTag(R.id.tag_item_animated))) return;
         view.setTag(R.id.tag_item_animated, Boolean.TRUE);
+        if (reduceMotion(view.getContext())) {
+            view.setAlpha(1f);
+            view.setTranslationY(0f);
+            return;
+        }
         view.setAlpha(0f);
         view.setTranslationY(dpToPx(view.getContext(), 16));
         view.animate()
@@ -112,6 +153,11 @@ public final class UiUtils {
      * content the way a scale would.
      */
     public static void playBouncyScreenEntrance(@NonNull View view) {
+        if (reduceMotion(view.getContext())) {
+            view.setAlpha(1f);
+            view.setTranslationY(0f);
+            return;
+        }
         view.setAlpha(0f);
         view.setTranslationY(dpToPx(view.getContext(), 12));
         view.animate()
@@ -127,6 +173,7 @@ public final class UiUtils {
      * listener so the click, ripple and scroll still work as usual.
      */
     public static void attachPressBounce(@NonNull View view) {
+        if (reduceMotion(view.getContext())) return;
         view.setOnTouchListener((v, event) -> {
             switch (event.getActionMasked()) {
                 case MotionEvent.ACTION_DOWN:
@@ -154,6 +201,12 @@ public final class UiUtils {
         Window window = dialog.getWindow();
         if (window == null) return;
         View decor = window.getDecorView();
+        if (reduceMotion(dialog.getContext())) {
+            decor.setAlpha(1f);
+            decor.setScaleX(1f);
+            decor.setScaleY(1f);
+            return;
+        }
         decor.setAlpha(0f);
         decor.setScaleX(0.9f);
         decor.setScaleY(0.9f);
