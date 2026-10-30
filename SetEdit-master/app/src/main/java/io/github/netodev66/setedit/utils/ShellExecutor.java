@@ -136,19 +136,15 @@ public final class ShellExecutor {
         }
         try {
             return toResult(AdbShell.exec(context, command));
-        } catch (Throwable first) {
-            // The connection may have gone stale (adbd restarted, port changed). Reconnect once
-            // and retry so a transient drop does not silently fall back to ContentResolver.
-            if (AdbConnector.reconnect(context)) {
-                try {
-                    return toResult(AdbShell.exec(context, command));
-                } catch (Throwable second) {
-                    return new Result(Collections.emptyList(),
-                            Collections.singletonList(String.valueOf(second.getMessage())), 1);
-                }
-            }
+        } catch (Throwable th) {
+            // Any transport failure — a dead socket after WiFi is gone, or a stale one after adbd
+            // restarted — means this connection is done. Mark it so isAvailable() stops reporting
+            // true, and fall back to the provider. Reconnecting is deliberately NOT attempted here:
+            // connect() can block for a long time on an unreachable port, which would hang this
+            // write/read. The next app resume reconnects on its own thread instead.
+            AdbConnector.onTransportLost(context);
             return new Result(Collections.emptyList(),
-                    Collections.singletonList(String.valueOf(first.getMessage())), 1);
+                    Collections.singletonList(String.valueOf(th.getMessage())), 1);
         }
     }
 

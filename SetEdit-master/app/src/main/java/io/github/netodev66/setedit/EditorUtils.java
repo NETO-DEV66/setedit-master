@@ -3,9 +3,7 @@ package io.github.netodev66.setedit;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Process;
 import android.provider.Settings;
@@ -34,6 +32,14 @@ public class EditorUtils {
      */
     @Nullable
     public static Boolean checkSettingsPermission(@NonNull Context context, @SettingsType String settingsType) {
+        // WRITE_SECURE_SETTINGS is accepted by the SettingsProvider for every table, including
+        // system, and the one-time ADB connection grants it. Short-circuit on it first so the
+        // system table never lands on the role-managed WRITE_SETTINGS path below, which cannot be
+        // granted over ADB and would otherwise open a system screen and report "not granted" even
+        // though the app can already write.
+        if (hasSecureWrite(context)) {
+            return true;
+        }
         String permission = SettingsType.SYSTEM_SETTINGS.equals(settingsType)
                 ? Manifest.permission.WRITE_SETTINGS : Manifest.permission.WRITE_SECURE_SETTINGS;
         if (SettingsType.SYSTEM_SETTINGS.equals(settingsType)) {
@@ -43,20 +49,42 @@ public class EditorUtils {
                             "appops set " + BuildConfig.APPLICATION_ID + " 23 0").exec();
                 }
                 if (!Settings.System.canWrite(context)) {
-                    try {
-                        Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS)
-                                .setData(Uri.parse("package:" + BuildConfig.APPLICATION_ID));
-                        context.startActivity(intent);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    return null;
+                    return false;
                 }
             }
         } else if (Boolean.TRUE.equals(Shell.isAppGrantedRoot())) {
             Shell.cmd("pm grant " + BuildConfig.APPLICATION_ID + " " + permission).exec();
         }
         return ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    /**
+     * Whether a settings write to {@code settingsType} can go ahead, prompting only when it truly
+     * cannot.
+     *
+     * <p>Unlike {@link #checkSettingsPermission}, this never leaves the caller to interpret a
+     * {@code null}: when the app cannot write it shows the permission message itself and returns
+     * {@code false}.
+     */
+    public static boolean canWriteSettings(@NonNull Context context, @SettingsType String settingsType) {
+        Boolean granted = checkSettingsPermission(context, settingsType);
+        if (Boolean.TRUE.equals(granted)) return true;
+        if (granted == null) return false;
+        displayGrantPermissionMessage(context);
+        return false;
+    }
+
+    /**
+     * Whether the app holds {@code WRITE_SECURE_SETTINGS}.
+     *
+     * <p>This single permission is what the {@code SettingsProvider} accepts as authorisation to
+     * write — and, via the {@code Settings} API, to read — every one of the three tables. It is the
+     * permission the one-time ADB connection grants, so checking it first is what lets the app keep
+     * working with no network.
+     */
+    public static boolean hasSecureWrite(@NonNull Context context) {
+        return ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_SECURE_SETTINGS)
+                == PackageManager.PERMISSION_GRANTED;
     }
 
     @SuppressLint({"InflateParams", "SetTextI18n"})

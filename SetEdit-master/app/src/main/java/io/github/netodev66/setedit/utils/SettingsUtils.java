@@ -1,15 +1,12 @@
 package io.github.netodev66.setedit.utils;
 
-import android.Manifest;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.core.util.Pair;
 
 import java.io.File;
@@ -176,15 +173,8 @@ public final class SettingsUtils {
                     "settings delete " + settingsType + " " + quote(keyName)));
             if (shellResult.successful) return shellResult;
         }
-        // WRITE_SECURE_SETTINGS alone authorises every table, including system. Checking it first
-        // avoids the system table's role-managed WRITE_SETTINGS prompt when the permission is held.
-        if (!hasSecureWrite(context)) {
-            Boolean isGranted = EditorUtils.checkSettingsPermission(context, settingsType);
-            if (isGranted == null) return new ActionResult(ActionResult.TYPE_DELETE, false);
-            if (!isGranted) {
-                EditorUtils.displayGrantPermissionMessage(context);
-                return new ActionResult(ActionResult.TYPE_DELETE, false);
-            }
+        if (!EditorUtils.canWriteSettings(context, settingsType)) {
+            return new ActionResult(ActionResult.TYPE_DELETE, false);
         }
         ContentResolver contentResolver = context.getContentResolver();
         try {
@@ -208,15 +198,8 @@ public final class SettingsUtils {
                     "settings put " + settingsType + " " + quote(keyName) + " " + quote(newValue)));
             if (shellResult.successful) return shellResult;
         }
-        // WRITE_SECURE_SETTINGS alone authorises every table, including system. Checking it first
-        // avoids the system table's role-managed WRITE_SETTINGS prompt when the permission is held.
-        if (!hasSecureWrite(context)) {
-            Boolean isGranted = EditorUtils.checkSettingsPermission(context, settingsType);
-            if (isGranted == null) return new ActionResult(actionType, false);
-            if (!isGranted) {
-                EditorUtils.displayGrantPermissionMessage(context);
-                return new ActionResult(actionType, false);
-            }
+        if (!EditorUtils.canWriteSettings(context, settingsType)) {
+            return new ActionResult(actionType, false);
         }
         ContentResolver contentResolver = context.getContentResolver();
         try {
@@ -239,21 +222,6 @@ public final class SettingsUtils {
         ActionResult r = new ActionResult(actionType, result.isSuccess());
         if (!result.isSuccess()) r.setLogs(result.errorMessage());
         return r;
-    }
-
-    /**
-     * Whether the app holds {@code WRITE_SECURE_SETTINGS}, which the {@code SettingsProvider}
-     * accepts as authorisation to write <em>any</em> of the three tables.
-     *
-     * <p>This matters offline. {@link EditorUtils#checkSettingsPermission} gates the {@code system}
-     * table behind the role-managed {@code WRITE_SETTINGS}, which cannot be granted with {@code pm
-     * grant}, and returns {@code null} (asking for the toggle) even when the app could already
-     * write. The one-time ADB connection grants {@code WRITE_SECURE_SETTINGS} instead, so it is
-     * checked first and, when held, the provider is written directly without any permission prompt.
-     */
-    private static boolean hasSecureWrite(@NonNull Context context) {
-        return ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_SECURE_SETTINGS)
-                == PackageManager.PERMISSION_GRANTED;
     }
 
     /** Wraps a shell argument in single quotes so spaces, quotes and symbols survive intact. */

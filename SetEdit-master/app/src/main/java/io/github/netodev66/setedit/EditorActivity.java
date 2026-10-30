@@ -182,16 +182,10 @@ public class EditorActivity extends AppCompatActivity implements AdapterView.OnI
         addNewItem = findViewById(R.id.efab);
         addNewItem.setOnClickListener(v -> {
             if (adapter instanceof SettingsRecyclerAdapter) {
-                if (ShellExecutor.isAvailable()) {
+                if (ShellExecutor.isAvailable()
+                        || EditorUtils.canWriteSettings(this,
+                        ((SettingsRecyclerAdapter) adapter).getSettingsType())) {
                     addNewItemDialog();
-                    return;
-                }
-                Boolean isGranted = EditorUtils.checkSettingsPermission(this, ((SettingsRecyclerAdapter) adapter).getSettingsType());
-                if (isGranted == null) return;
-                if (isGranted) {
-                    addNewItemDialog();
-                } else {
-                    EditorUtils.displayGrantPermissionMessage(this);
                 }
             }
         });

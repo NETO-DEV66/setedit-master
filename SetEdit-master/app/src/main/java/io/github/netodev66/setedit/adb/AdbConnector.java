@@ -57,6 +57,23 @@ public final class AdbConnector {
         return STATE.get() == State.CONNECTED;
     }
 
+    /**
+     * Records that the transport is dead, so {@link #isConnected()} stops reporting {@code true}
+     * for a socket the peer has already dropped, and closes the underlying connection so the next
+     * {@link #connect} builds a fresh one.
+     *
+     * <p>Called by the shell layer when a command fails. Without this the cached state would keep
+     * {@code ShellExecutor.isAvailable()} true after WiFi is gone and every later command would
+     * block on the dead socket instead of falling back to the provider.
+     */
+    public static void onTransportLost(@NonNull Context context) {
+        STATE.set(State.DISCONNECTED);
+        try {
+            AdbConnectionManager.getInstance(context).disconnect();
+        } catch (Throwable ignored) {
+        }
+    }
+
     /** Runs {@code work} on the shared background thread. */
     public static void runAsync(@NonNull Runnable work) {
         EXECUTOR.execute(work);
