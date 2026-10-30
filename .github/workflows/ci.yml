@@ -34,8 +34,15 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Set up the Android SDK
-        uses: android-actions/setup-android@v3
+      # The ubuntu runner image already ships the Android SDK (ANDROID_HOME is set). The
+      # android-actions/setup-android action is not used because it now tries to install the
+      # retired "tools" package and fails. Accept licenses so AGP can use the SDK.
+      - name: Accept the Android SDK licenses
+        run: |
+          SDKMANAGER="$(ls -d "${ANDROID_HOME}"/cmdline-tools/*/bin/sdkmanager 2>/dev/null | head -1)"
+          if [ -n "$SDKMANAGER" ]; then
+            yes | "$SDKMANAGER" --licenses > /dev/null || true
+          fi
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
