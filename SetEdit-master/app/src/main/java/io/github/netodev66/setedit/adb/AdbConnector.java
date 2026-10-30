@@ -1,6 +1,8 @@
 package io.github.netodev66.setedit.adb;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -90,6 +92,7 @@ public final class AdbConnector {
                     || attempt(manager, () -> manager.connectTcp(context, DISCOVERY_TIMEOUT_MILLIS))) {
                 STATE.set(State.CONNECTED);
                 lastError = null;
+                grantSecureSettings(context);
                 return State.CONNECTED;
             }
             // Discovery never found a daemon: wireless debugging is most likely off.
@@ -232,5 +235,29 @@ public final class AdbConnector {
         }
         STATE.set(State.DISCONNECTED);
         return connect(context) == State.CONNECTED;
+    }
+
+    /**
+     * Makes the app's own settings writes work without the ADB connection.
+     *
+     * <p>The {@code SettingsProvider} lets a caller write {@code system}/{@code secure}/{@code
+     * global} rows only with {@code WRITE_SECURE_SETTINGS} (or {@code WRITE_SETTINGS} for the system
+     * table), yet it never hands that permission to an app on its own. The ADB shell identity can
+     * grant it, so it is granted here, once, while the connection is up. The grant is stored by the
+     * package manager and survives both a WiFi drop and a reboot, which is what lets SetEdit keep
+     * editing settings with no network at all.
+     */
+    private static void grantSecureSettings(@NonNull Context context) {
+        if (context.checkSelfPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
+                == PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        String pkg = context.getPackageName();
+        try {
+            AdbShell.exec(context, "pm grant " + pkg + " " + Manifest.permission.WRITE_SECURE_SETTINGS);
+            AdbShell.exec(context, "pm grant " + pkg + " " + Manifest.permission.WRITE_SETTINGS);
+            AdbShell.exec(context, "appops set " + pkg + " WRITE_SETTINGS allow");
+        } catch (Throwable ignored) {
+        }
     }
 }

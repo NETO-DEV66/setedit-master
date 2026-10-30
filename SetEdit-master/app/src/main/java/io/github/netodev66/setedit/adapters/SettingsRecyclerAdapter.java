@@ -280,11 +280,13 @@ public class SettingsRecyclerAdapter extends AbsRecyclerAdapter {
     @NonNull
     private static Cursor getCursor(Context context, String settingsType) {
         // Prefer the privileged shell: on Android 15+ the SettingsProvider hides most keys from
-        // apps that target a modern SDK, so the ContentResolver view would be incomplete.
+        // apps that target a modern SDK, so the ContentResolver view would be incomplete. When the
+        // shell is gone the provider is still read, merged with the last shell snapshot, so the app
+        // keeps working after wireless debugging has been used once and the device goes offline.
         @Nullable
-        List<Pair<String, String>> shellItems = SettingsUtils.readAll(settingsType);
-        if (shellItems != null) {
-            return buildCursor(shellItems);
+        List<Pair<String, String>> items = SettingsUtils.readAll(context, settingsType);
+        if (items != null) {
+            return buildCursor(items);
         }
         try {
             ContentResolver contentResolver = context.getContentResolver();
