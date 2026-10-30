@@ -15,7 +15,7 @@ A modern, Material 3 Settings Database Editor for Android.
 [![License](https://img.shields.io/badge/license-GPLv3-5B4CDB)](LICENSE)
 [![Website](https://img.shields.io/badge/website-live-5B4CDB)](https://neto-dev66.github.io/setedit-master/)
 
-[**Download APK**](https://github.com/NETO-DEV66/setedit-master/releases/latest/download/SetEdit-4.2-release.apk) ·
+[**Download APK**](https://github.com/NETO-DEV66/setedit-master/releases/latest/download/SetEdit-4.3-release.apk) ·
 [**Website**](https://neto-dev66.github.io/setedit-master/) ·
 [**Releases**](https://github.com/NETO-DEV66/setedit-master/releases) ·
 [**Report a bug**](https://github.com/NETO-DEV66/setedit-master/issues)
@@ -44,8 +44,12 @@ settings`. Edit any row by name or value, or add a new one.
 | **Search everywhere** | One search box that scans the `system`, `secure` and `global` tables and jumps straight to a match. |
 | **Favorites** | Star any key and reach it again from the Favorites tab. |
 | **Backup & restore** | Export the tables to a file and restore them later, key by key. |
-| **Recipes** | One-tap bundles of well-known tweaks, applied together with a confirmation. |
-| **History & revert** | Every change is recorded, so an earlier value can be restored from the editor. |
+| **Recipes** | One-tap bundles of well-known tweaks, applied together with a confirmation. Grouped by category and searchable, with room for your own custom recipes. |
+| **History & revert** | Every change is recorded, newest first, so an earlier value can be restored — from the editor or the history screen. |
+| **Sort any table** | Order a list by name or by value, A-Z or Z-A, from the toolbar. |
+| **Copy to clipboard** | Long-press a row or use the editor to copy a key, a value or a whole row. |
+| **Auto-backup** | Save a snapshot automatically before changing a sensitive key. |
+| **Tile & widget** | A Quick Settings tile to jump in, and a home-screen widget for your starred keys. |
 | **Risky-key warnings** | Keys that can destabilise a device are flagged before they are written. |
 | **Onboarding** | A short first-run tour that explains the privileged-access model. |
 | **Editor bottom sheet** | Create, edit and delete keys from a Material 3 modal sheet. |
@@ -61,20 +65,20 @@ settings`. Edit any row by name or value, or add a new one.
 
 Grab the latest signed APK:
 
-**[⬇ SetEdit-4.2-release.apk](https://github.com/NETO-DEV66/setedit-master/releases/latest/download/SetEdit-4.2-release.apk)** (~2.0 MB)
+**[⬇ SetEdit-4.3-release.apk](https://github.com/NETO-DEV66/setedit-master/releases/latest/download/SetEdit-4.3-release.apk)** (~2.0 MB)
 
 | | |
 |---|---|
 | Package | `io.github.netodev66.setedit` |
-| Version | 4.2 (versionCode 22) |
+| Version | 4.3 (versionCode 23) |
 | Requires | Android 7.0 (API 24) or newer |
 | Size | ~2.0 MB |
 
 Verify the download:
 
 ```shell
-sha256sum SetEdit-4.2-release.apk
-# 0df5c12b868828b978cb9467809f2dc2c21b54852c13e60b8f27ea7f5b35cbaf
+sha256sum SetEdit-4.3-release.apk
+# 4f273a7f8e440e8362bca595ed7d96048d9e4ea2c6df1fd741fbe048e5504732
 ```
 
 ## Permissions
