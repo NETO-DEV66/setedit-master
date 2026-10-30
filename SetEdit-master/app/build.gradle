@@ -4,6 +4,10 @@ apply plugin: 'com.android.application'
 
 def releaseKeystoreFile = file('release.keystore')
 def hasReleaseKeystore = releaseKeystoreFile.exists()
+// The debug keystore is a local convenience and is git-ignored, so CI has none. When it is
+// absent, leave the debug signing config unset and let AGP generate its own debug keystore.
+def debugKeystoreFile = file('dev_keystore.jks')
+def hasDebugKeystore = debugKeystoreFile.exists()
 // Prefer CI/secret-provided values, fall back to a local key.properties, then to the
 // generated development keystore so local release builds still produce a signed APK.
 def keyProps = new Properties()
@@ -31,10 +35,15 @@ android {
 
     signingConfigs {
         debug {
-            storeFile file('dev_keystore.jks')
-            storePassword 'kJCp!Bda#PBdN2RLK%yMK@hatq&69E'
-            keyPassword 'kJCp!Bda#PBdN2RLK%yMK@hatq&69E'
-            keyAlias 'key0'
+            // When the local dev keystore is present, sign with it so debug builds keep a stable
+            // signature across machines. When it is absent (CI), leave storeFile unset so AGP
+            // falls back to the debug keystore it generates itself.
+            if (hasDebugKeystore) {
+                storeFile debugKeystoreFile
+                storePassword 'kJCp!Bda#PBdN2RLK%yMK@hatq&69E'
+                keyPassword 'kJCp!Bda#PBdN2RLK%yMK@hatq&69E'
+                keyAlias 'key0'
+            }
         }
         release {
             if (hasReleaseKeystore) {
