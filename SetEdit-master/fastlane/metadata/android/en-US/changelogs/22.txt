@@ -1,0 +1,10 @@
+The recipes work, and the shell behaves.
+
+* Recipes now take effect. The animation presets wrote to the wrong settings
+  table, so the system ignored them and nothing changed. They now write where
+  Android actually reads the values. Every recipe also reads its value back, so
+  one that cannot apply says so instead of reporting a false success.
+* Back returns to Home. Pressing back from any other tab now takes you to the
+  dashboard instead of closing the app. Back from Home still leaves the app.
+* Full-screen mode. The app runs edge-to-edge and hides the status and
+  navigation bars. Swipe from an edge to bring them back.

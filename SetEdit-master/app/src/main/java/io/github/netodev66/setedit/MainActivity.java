@@ -6,6 +6,7 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -68,6 +69,20 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.Host
         bottomNav.setOnItemSelectedListener(item -> {
             bounce(item.getItemId());
             return show(fragmentFor(item.getItemId()));
+        });
+
+        // Back returns to Home from any other tab; from Home it leaves the app, as users expect.
+        // Without this the system back button finished the activity from every tab.
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (bottomNav.getSelectedItemId() != R.id.nav_home) {
+                    bottomNav.setSelectedItemId(R.id.nav_home);
+                } else {
+                    setEnabled(false);
+                    getOnBackPressedDispatcher().onBackPressed();
+                }
+            }
         });
 
         UiUtils.playBouncyScreenEntrance(findViewById(R.id.nav_host));

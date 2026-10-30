@@ -70,12 +70,25 @@ public final class Tables {
     public static String readValue(@NonNull Context context, @TableTypeInt int tableType,
                                    @NonNull String key) {
         if (!isSettingsTable(tableType)) return null;
-        io.github.netodev66.setedit.utils.ShellExecutor.Result result =
-                io.github.netodev66.setedit.utils.ShellExecutor.exec(
-                        "settings get " + settingsTypeOf(tableType) + " " + key);
-        if (!result.isSuccess() || result.stdout.isEmpty()) return null;
-        String value = result.stdout.get(0);
-        return "null".equals(value) ? null : value;
+        if (io.github.netodev66.setedit.utils.ShellExecutor.isAvailable()) {
+            io.github.netodev66.setedit.utils.ShellExecutor.Result result =
+                    io.github.netodev66.setedit.utils.ShellExecutor.exec(
+                            "settings get " + settingsTypeOf(tableType) + " " + key);
+            if (result.isSuccess() && !result.stdout.isEmpty()) {
+                String value = result.stdout.get(0);
+                return "null".equals(value) ? null : value;
+            }
+        }
+        // No shell: fall back to the provider, which WRITE_SECURE_SETTINGS also lets us read.
+        try (android.database.Cursor cursor = context.getContentResolver().query(
+                android.net.Uri.parse("content://settings/" + settingsTypeOf(tableType)),
+                new String[]{"value"}, "name = ?", new String[]{key}, null)) {
+            if (cursor != null && cursor.moveToFirst()) {
+                return cursor.getString(0);
+            }
+        } catch (Throwable ignored) {
+        }
+        return null;
     }
 
     /** Searches the system, secure and global tables for keys containing {@code query}. */

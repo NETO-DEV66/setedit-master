@@ -33,7 +33,9 @@ import androidx.annotation.StyleRes;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 
 import com.google.android.material.internal.ViewUtils;
 
@@ -342,6 +344,25 @@ public final class UiUtils {
             }
         }
         setSystemBarTransparent(window);
+    }
+
+    /**
+     * Hides the status and navigation bars so the app runs edge-to-edge and full screen.
+     *
+     * <p>The bars stay reachable: a swipe from the edge reveals them transiently
+     * ({@code BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE}), so the user is never locked out of Home,
+     * Back or Recents. Re-applied on resume because a dialog, the soft keyboard or a system
+     * gesture can bring the bars back.
+     */
+    public static void applyImmersiveMode(@NonNull android.app.Activity activity) {
+        Window window = activity.getWindow();
+        if (window == null) return;
+        WindowCompat.setDecorFitsSystemWindows(window, false);
+        WindowInsetsControllerCompat controller =
+                WindowCompat.getInsetsController(window, window.getDecorView());
+        controller.setSystemBarsBehavior(
+                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+        controller.hide(WindowInsetsCompat.Type.systemBars());
     }
 
     @SuppressWarnings("deprecation")

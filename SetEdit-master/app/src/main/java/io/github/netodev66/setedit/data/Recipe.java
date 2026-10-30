@@ -73,6 +73,11 @@ public final class Recipe {
     /**
      * The built-in recipes. Values are the documented defaults for each feature, so applying a
      * recipe always produces a predictable, reversible result.
+     *
+     * <p>Each change must name the table the platform actually reads the key from — the animation
+     * scales live in {@code global} ({@code Settings.Global.WINDOW_ANIMATION_SCALE} and friends),
+     * not {@code system}. Writing a key to the wrong table silently succeeds and does nothing,
+     * because {@code settings put} creates the row without complaint.
      */
     @NonNull
     public static List<Recipe> all() {
@@ -80,21 +85,21 @@ public final class Recipe {
         recipes.add(new Recipe("fast_animations", "Fast animations",
                 "Set window, transition and animator scales to 0.5x for snappier transitions.",
                 "speed",
-                changes(sys("window_animation_scale", "0.5"),
-                        sys("transition_animation_scale", "0.5"),
-                        sys("animator_duration_scale", "0.5"))));
+                changes(global("window_animation_scale", "0.5"),
+                        global("transition_animation_scale", "0.5"),
+                        global("animator_duration_scale", "0.5"))));
         recipes.add(new Recipe("no_animations", "Turn off animations",
                 "Disable all system animations. Useful for older or slower devices.",
                 "speed",
-                changes(sys("window_animation_scale", "0.0"),
-                        sys("transition_animation_scale", "0.0"),
-                        sys("animator_duration_scale", "0.0"))));
+                changes(global("window_animation_scale", "0.0"),
+                        global("transition_animation_scale", "0.0"),
+                        global("animator_duration_scale", "0.0"))));
         recipes.add(new Recipe("default_animations", "Default animations",
                 "Restore the standard 1x animation scales.",
                 "restore",
-                changes(sys("window_animation_scale", "1.0"),
-                        sys("transition_animation_scale", "1.0"),
-                        sys("animator_duration_scale", "1.0"))));
+                changes(global("window_animation_scale", "1.0"),
+                        global("transition_animation_scale", "1.0"),
+                        global("animator_duration_scale", "1.0"))));
         recipes.add(new Recipe("show_touches", "Show touch points",
                 "Draw a dot wherever you touch the screen. Handy for demos and recordings.",
                 "touch",

@@ -3,12 +3,10 @@ package io.github.netodev66.setedit;
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
-import android.view.Window;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.core.view.WindowCompat;
 
 import com.google.android.material.color.DynamicColors;
 import com.topjohnwu.superuser.Shell;
@@ -40,8 +38,7 @@ public class App extends Application {
     public static class ActivityAppearanceCallback implements Application.ActivityLifecycleCallbacks {
         @Override
         public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
-            Window window = activity.getWindow();
-            WindowCompat.setDecorFitsSystemWindows(window, false);
+            io.github.netodev66.util.UiUtils.applyImmersiveMode(activity);
         }
 
         @Override
@@ -51,7 +48,8 @@ public class App extends Application {
 
         @Override
         public void onActivityResumed(@NonNull Activity activity) {
-
+            // Dialogs and the soft keyboard can bring the bars back, so hide them again.
+            io.github.netodev66.util.UiUtils.applyImmersiveMode(activity);
         }
 
         @Override

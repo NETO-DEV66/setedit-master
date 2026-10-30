@@ -17,10 +17,13 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import io.github.netodev66.setedit.EditorUtils;
 import io.github.netodev66.setedit.data.Recipe;
 import io.github.netodev66.setedit.ui.RecipeAdapter;
+import io.github.netodev66.setedit.ui.Tables;
 import io.github.netodev66.setedit.utils.ActionResult;
 import io.github.netodev66.setedit.utils.SettingsUtils;
+import io.github.netodev66.setedit.utils.ShellExecutor;
 
 /** The full-screen recipes list, opened from the dashboard. */
 public class RecipesActivity extends AppCompatActivity implements RecipeAdapter.Listener {
@@ -55,17 +58,41 @@ public class RecipesActivity extends AppCompatActivity implements RecipeAdapter.
 
     private void apply(@NonNull Recipe recipe) {
         Context appContext = getApplicationContext();
+        if (!ShellExecutor.isAvailable() && !EditorUtils.hasSecureWrite(appContext)) {
+            Toast.makeText(this, R.string.recipe_needs_access, Toast.LENGTH_LONG).show();
+            return;
+        }
         EXECUTOR.submit(() -> {
             boolean allOk = true;
             for (Recipe.Change change : recipe.changes) {
                 ActionResult result = SettingsUtils.update(appContext, change.table, change.key, change.value);
-                if (!result.successful) allOk = false;
+                if (!result.successful || !matches(appContext, change)) allOk = false;
             }
             final boolean ok = allOk;
-            runOnUiThread(() -> Toast.makeText(this,
-                    ok ? getString(R.string.recipe_applied, recipe.title)
-                            : getString(R.string.recipe_failed, recipe.title),
-                    Toast.LENGTH_SHORT).show());
+            runOnUiThread(() -> {
+                if (isFinishing() || isDestroyed()) return;
+                Toast.makeText(this,
+                        ok ? getString(R.string.recipe_applied, recipe.title)
+                                : getString(R.string.recipe_failed, recipe.title),
+                        Toast.LENGTH_SHORT).show();
+            });
         });
+    }
+
+    /**
+     * Reads the key back and checks it holds the value we wrote.
+     *
+     * <p>{@code settings put} reports success even when the row was written to a table the
+     * platform does not read, so a successful write is not proof the recipe took effect. Comparing
+     * the stored value is what turns a silent no-op into an honest failure message.
+     */
+    private static boolean matches(@NonNull Context context, @NonNull Recipe.Change change) {
+        String stored = Tables.readValue(context, Tables.tableTypeOf(change.table), change.key);
+        if (stored == null) return false;
+        try {
+            return Double.parseDouble(stored.trim()) == Double.parseDouble(change.value.trim());
+        } catch (NumberFormatException ignored) {
+            return stored.trim().equalsIgnoreCase(change.value.trim());
+        }
     }
 }
