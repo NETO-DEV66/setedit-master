@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 import io.github.netodev66.setedit.adb.AdbConnector;
 import io.github.netodev66.setedit.adb.AdbShell;
+import io.github.netodev66.setedit.data.AppPrefs;
 import moe.shizuku.server.IRemoteProcess;
 import moe.shizuku.server.IShizukuService;
 import rikka.shizuku.Shizuku;
@@ -87,6 +88,50 @@ public final class ShellExecutor {
         return Mode.NONE;
     }
 
+    /** Permissions the shell grants once, so no later action has to ask the user again. */
+    private static final String[] GRANTED_PERMISSIONS = {
+            android.Manifest.permission.WRITE_SECURE_SETTINGS,
+            android.Manifest.permission.WRITE_SETTINGS,
+            "android.permission.PACKAGE_USAGE_STATS",
+    };
+
+    /** AppOps that gate the permissions above. */
+    private static final String[] GRANTED_APP_OPS = {
+            "WRITE_SETTINGS",
+            "GET_USAGE_STATS",
+    };
+
+    /**
+     * Grants the whole privileged permission set through the shell identity.
+     *
+     * <p>{@code SettingsProvider} only lets a caller write {@code system}/{@code secure}/{@code
+     * global} rows with {@code WRITE_SECURE_SETTINGS} (or {@code WRITE_SETTINGS}), and it never
+     * hands that permission to an app on its own — only the shell (uid 2000) or root can. Usage
+     * access is granted the same way. The package manager stores all of these, so one successful
+     * pass leaves the app fully privileged and survives both a WiFi drop and a reboot.
+     *
+     * @return {@code true} when the primary settings permission is granted afterwards
+     */
+    public static boolean grantPrivilegedPermissions(@NonNull Context context) {
+        String pkg = context.getPackageName();
+        for (String permission : GRANTED_PERMISSIONS) {
+            exec("pm grant " + pkg + " " + permission);
+        }
+        for (String op : GRANTED_APP_OPS) {
+            exec("appops set " + pkg + " " + op + " allow");
+        }
+        return context.checkSelfPermission(android.Manifest.permission.WRITE_SECURE_SETTINGS)
+                == android.content.pm.PackageManager.PERMISSION_GRANTED;
+    }
+
+    /** True when the settings write permission is already held, so granting can be skipped. */
+    public static boolean hasPrivilegedPermissions(@NonNull Context context) {
+        return context.checkSelfPermission(android.Manifest.permission.WRITE_SECURE_SETTINGS)
+                == android.content.pm.PackageManager.PERMISSION_GRANTED
+                && context.checkSelfPermission("android.permission.PACKAGE_USAGE_STATS")
+                == android.content.pm.PackageManager.PERMISSION_GRANTED;
+    }
+
     public static boolean isAvailable() {
         return getMode() != Mode.NONE;
     }
@@ -125,6 +170,28 @@ public final class ShellExecutor {
             default:
                 return new Result(Collections.emptyList(), Collections.emptyList(), EXIT_UNSUPPORTED);
         }
+    }
+
+    /**
+     * Runs a command, reconnecting once when the ADB transport turns out to be dead.
+     *
+     * <p>A paired device keeps trusting this app's key, so a dropped socket is a transient problem,
+     * not a reason to make the user pair again. When the command fails and no shell is available
+     * any more, the connection is re-established from the remembered endpoint and the command is
+     * issued a second time.
+     */
+    @NonNull
+    public static Result execWithRetry(@NonNull String command) {
+        Result result = exec(command);
+        if (result.isSuccess()) return result;
+        Context context = appContext;
+        // Root and Shizuku do not drop this way, and a device that never paired has nothing to
+        // reconnect to. A still-available ADB mode means the command itself failed, so retrying
+        // it would only repeat the failure.
+        if (context == null || getMode() != Mode.NONE) return result;
+        if (!AppPrefs.isAdbPaired(context)) return result;
+        if (!AdbConnector.reconnect(context)) return result;
+        return exec(command);
     }
 
     @NonNull

@@ -1,8 +1,6 @@
 package io.github.netodev66.setedit.adb;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,6 +18,8 @@ import io.github.muntashirakon.adb.AbsAdbConnectionManager;
 import io.github.muntashirakon.adb.AdbAuthenticationFailedException;
 import io.github.muntashirakon.adb.AdbPairingRequiredException;
 import io.github.muntashirakon.adb.android.AdbMdns;
+import io.github.netodev66.setedit.data.AppPrefs;
+import io.github.netodev66.setedit.utils.ShellExecutor;
 
 /**
  * Owns the app's connection to the device's own ADB daemon over wireless debugging.
@@ -27,12 +27,23 @@ import io.github.muntashirakon.adb.android.AdbMdns;
  * <p>Discovery uses mDNS, so the connection follows the port that wireless debugging picks each
  * time it is turned on. Pairing happens once; afterwards the daemon already knows this app's key
  * and {@link #connect} succeeds silently.
+ *
+ * <p>A successful connect records the host and port it used, and every later connect tries that
+ * endpoint first. mDNS discovery is the slow and unreliable half of reconnecting — it gives up
+ * after a few seconds when the phone is busy — so skipping it whenever a known-good endpoint is
+ * remembered is what keeps a paired device from ever asking the user to pair again.
  */
 public final class AdbConnector {
     public enum State {DISCONNECTED, CONNECTING, CONNECTED, NEEDS_PAIRING}
 
     /** How long mDNS discovery may take before giving up. */
     public static final long DISCOVERY_TIMEOUT_MILLIS = 3000L;
+
+    /**
+     * How long a single connect attempt may take. The remembered-endpoint path needs only a TCP
+     * handshake, so it stays quick, while discovery gets the full budget.
+     */
+    private static final long CONNECT_TIMEOUT_MILLIS = 5000L;
 
     private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor(runnable -> {
         Thread thread = new Thread(runnable, "setedit-adb");
@@ -87,9 +98,10 @@ public final class AdbConnector {
     /**
      * Connects to the already-paired ADB daemon.
      *
-     * <p>Tries, in order, the TLS connect service that wireless debugging advertises, the plain
-     * ADB service, and finally the classic TCP port. {@link State#NEEDS_PAIRING} means the daemon
-     * rejected this app's key, so the user has to pair.
+     * <p>First tries the host and port a previous connect recorded, which needs no discovery and is
+     * therefore the fast, reliable path. Only when that fails does it fall back to mDNS discovery of
+     * the TLS connect service and then the plain ADB service.
+     * {@link State#NEEDS_PAIRING} means the daemon rejected this app's key, so the user has to pair.
      */
     @WorkerThread
     @NonNull
@@ -99,18 +111,32 @@ public final class AdbConnector {
             AbsAdbConnectionManager manager = AdbConnectionManager.getInstance(context);
             if (manager.isConnected()) {
                 STATE.set(State.CONNECTED);
+                AppPrefs.setPrivilegeGrantedOnce(context, true);
                 return State.CONNECTED;
             }
             manager.setThrowOnUnauthorised(true);
-            manager.setTimeout(DISCOVERY_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
+            manager.setTimeout(CONNECT_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
 
-            if (attempt(manager, () -> manager.connect(5555))
-                    || attempt(manager, () -> manager.connectTls(context, DISCOVERY_TIMEOUT_MILLIS))
-                    || attempt(manager, () -> manager.connectTcp(context, DISCOVERY_TIMEOUT_MILLIS))) {
-                STATE.set(State.CONNECTED);
-                lastError = null;
-                grantSecureSettings(context);
-                return State.CONNECTED;
+            String host = AppPrefs.getAdbHost(context);
+            int port = AppPrefs.getAdbPort(context);
+            if (host != null && port > 0) {
+                boolean ok;
+                try {
+                    ok = attempt(manager, () -> manager.connect(host, port));
+                } catch (AdbPairingRequiredException | AdbAuthenticationFailedException e) {
+                    // The remembered port may now belong to something else that refuses this app's
+                    // key. That is a stale endpoint, not a real pairing problem, so fall through to
+                    // discovery instead of sending the user back to the pairing dialog.
+                    ok = false;
+                }
+                if (ok) return connected(context, host, port);
+                AppPrefs.clearAdbEndpoint(context);
+            }
+
+            Discovered discovered = discoverConnectService(context);
+            if (discovered != null
+                    && attempt(manager, () -> manager.connect(discovered.host, discovered.port))) {
+                return connected(context, discovered.host, discovered.port);
             }
             // Discovery never found a daemon: wireless debugging is most likely off.
             STATE.set(State.DISCONNECTED);
@@ -122,6 +148,56 @@ public final class AdbConnector {
             lastError = th.getMessage();
         }
         return STATE.get();
+    }
+
+    /**
+     * Finds the ADB daemon's connect port over mDNS.
+     *
+     * <p>The daemon advertises a fresh port each time wireless debugging is turned on, so discovery
+     * is what a first connection needs. The TLS connect service is preferred; the plain ADB service
+     * is tried when it is not advertised.
+     */
+    @Nullable
+    private static Discovered discoverConnectService(@NonNull Context context) {
+        Discovered tls = discover(context, AdbMdns.SERVICE_TYPE_TLS_CONNECT, DISCOVERY_TIMEOUT_MILLIS);
+        return tls != null
+                ? tls : discover(context, AdbMdns.SERVICE_TYPE_ADB, DISCOVERY_TIMEOUT_MILLIS);
+    }
+
+    @Nullable
+    private static Discovered discover(@NonNull Context context, @NonNull String serviceType,
+                                       long timeoutMillis) {
+        CountDownLatch found = new CountDownLatch(1);
+        AtomicReference<String> host = new AtomicReference<>();
+        AtomicInteger port = new AtomicInteger(-1);
+        AdbMdns mdns = new AdbMdns(context, serviceType, (address, p) -> {
+            if (address != null && p > 0) {
+                host.set(address.getHostAddress());
+                port.set(p);
+                found.countDown();
+            }
+        });
+        try {
+            mdns.start();
+            found.await(timeoutMillis, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } finally {
+            mdns.stop();
+        }
+        return host.get() == null || port.get() <= 0 ? null : new Discovered(host.get(), port.get());
+    }
+
+    /** Marks a successful connect: remembers the endpoint, records the pairing and grants settings. */
+    @NonNull
+    private static State connected(@NonNull Context context, @Nullable String host, int port) {
+        if (host != null && port > 0) AppPrefs.setAdbEndpoint(context, host, port);
+        AppPrefs.setAdbPaired(context, true);
+        AppPrefs.setPrivilegeGrantedOnce(context, true);
+        STATE.set(State.CONNECTED);
+        lastError = null;
+        grantSecureSettings(context);
+        return State.CONNECTED;
     }
 
     /**
@@ -163,31 +239,7 @@ public final class AdbConnector {
     @WorkerThread
     @Nullable
     public static Discovered discoverPairingService(@NonNull Context context, long timeoutMillis) {
-        AtomicInteger port = new AtomicInteger(-1);
-        AtomicReference<String> host = new AtomicReference<>(null);
-        CountDownLatch resolved = new CountDownLatch(1);
-        AdbMdns mdns = new AdbMdns(context, AdbMdns.SERVICE_TYPE_TLS_PAIRING, (hostAddress, foundPort) -> {
-            if (hostAddress != null) {
-                host.set(hostAddress.getHostAddress());
-                port.set(foundPort);
-            }
-            resolved.countDown();
-        });
-        mdns.start();
-        try {
-            if (!resolved.await(timeoutMillis, TimeUnit.MILLISECONDS)) {
-                return null;
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            return null;
-        } finally {
-            mdns.stop();
-        }
-        String foundHost = host.get();
-        int foundPort = port.get();
-        if (foundHost == null || foundPort == -1) return null;
-        return new Discovered(foundHost, foundPort);
+        return discover(context, AdbMdns.SERVICE_TYPE_TLS_PAIRING, timeoutMillis);
     }
 
     /** Pairs with the daemon using a code shown in the wireless-debugging dialog. */
@@ -255,26 +307,14 @@ public final class AdbConnector {
     }
 
     /**
-     * Makes the app's own settings writes work without the ADB connection.
+     * Grants the app the settings and usage permissions through the shell that is now connected.
      *
-     * <p>The {@code SettingsProvider} lets a caller write {@code system}/{@code secure}/{@code
-     * global} rows only with {@code WRITE_SECURE_SETTINGS} (or {@code WRITE_SETTINGS} for the system
-     * table), yet it never hands that permission to an app on its own. The ADB shell identity can
-     * grant it, so it is granted here, once, while the connection is up. The grant is stored by the
-     * package manager and survives both a WiFi drop and a reboot, which is what lets SetEdit keep
-     * editing settings with no network at all.
+     * <p>The heavy lifting lives in {@link ShellExecutor#grantPrivilegedPermissions}, so the same
+     * set is granted whether the shell came from ADB, Shizuku or root. Skipped once the permissions
+     * are already held, since the package manager keeps them across a WiFi drop and a reboot.
      */
     private static void grantSecureSettings(@NonNull Context context) {
-        if (context.checkSelfPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
-                == PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        String pkg = context.getPackageName();
-        try {
-            AdbShell.exec(context, "pm grant " + pkg + " " + Manifest.permission.WRITE_SECURE_SETTINGS);
-            AdbShell.exec(context, "pm grant " + pkg + " " + Manifest.permission.WRITE_SETTINGS);
-            AdbShell.exec(context, "appops set " + pkg + " WRITE_SETTINGS allow");
-        } catch (Throwable ignored) {
-        }
+        if (ShellExecutor.hasPrivilegedPermissions(context)) return;
+        ShellExecutor.grantPrivilegedPermissions(context);
     }
 }

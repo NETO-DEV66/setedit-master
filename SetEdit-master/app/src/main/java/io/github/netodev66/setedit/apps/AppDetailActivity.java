@@ -35,10 +35,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import io.github.netodev66.setedit.R;
+import io.github.netodev66.setedit.adb.ConnectActivity;
 import io.github.netodev66.setedit.data.AppListLoader;
 import io.github.netodev66.setedit.utils.AppActions;
 import io.github.netodev66.setedit.utils.AppCommands;
 import io.github.netodev66.setedit.utils.AppActionResult;
+import io.github.netodev66.setedit.utils.PrivilegedAccess;
 
 /** Shows one app and runs the manage actions on it through the privileged shell. */
 public class AppDetailActivity extends AppCompatActivity implements AppActionAdapter.Listener {
@@ -293,10 +295,30 @@ public class AppDetailActivity extends AppCompatActivity implements AppActionAda
             openSystem(action.id.equals("info"));
             return;
         }
-        if (!AppActions.isPrivileged()) {
-            Toast.makeText(this, R.string.app_needs_privilege, Toast.LENGTH_LONG).show();
+        if (AppActions.isPrivileged()) {
+            dispatch(action);
             return;
         }
+        // Access is not up right now. Try to restore it silently — root, a Shizuku grant, or a
+        // reconnect to a device that has paired before — and only fall back to the connect screen
+        // when this device has never had access at all.
+        progress.setVisibility(View.VISIBLE);
+        PrivilegedAccess.ensure(this, (ready, reason) -> {
+            if (isFinishing() || isDestroyed()) return;
+            progress.setVisibility(View.GONE);
+            if (ready) {
+                dispatch(action);
+                return;
+            }
+            Toast.makeText(this, reason, Toast.LENGTH_LONG).show();
+            if (PrivilegedAccess.needsUserSetup(this)) {
+                startActivity(new Intent(this, ConnectActivity.class));
+            }
+        });
+    }
+
+    /** Routes an action once a privileged shell is known to be available. */
+    private void dispatch(@NonNull AppActionAdapter.Action action) {
         switch (action.id) {
             case "permissions":
                 showPermissions();

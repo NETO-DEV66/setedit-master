@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
 
 /**
@@ -27,6 +28,11 @@ public final class AppPrefs {
     private static final String KEY_LAST_UPDATE_CHECK = "last_update_check";
     private static final String KEY_REDUCE_MOTION = "reduce_motion";
     private static final String KEY_AUTO_BACKUP = "auto_backup";
+    private static final String KEY_ADB_HOST = "adb_host";
+    private static final String KEY_ADB_PORT = "adb_port";
+    private static final String KEY_ADB_PAIRED = "adb_paired";
+    private static final String KEY_PRIVILEGE_GRANTED_ONCE = "privilege_granted_once";
+    private static final String KEY_SHIZUKU_DENIED = "shizuku_denied";
 
     private AppPrefs() {
     }
@@ -134,5 +140,67 @@ public final class AppPrefs {
 
     public static void setAutoBackup(@NonNull Context context, boolean enabled) {
         get(context).edit().putBoolean(KEY_AUTO_BACKUP, enabled).apply();
+    }
+
+    /**
+     * The ADB host this device's daemon was last reached on, or {@code null} when it was never
+     * recorded. Remembering it lets a reconnect skip mDNS discovery, which is the slow and flaky
+     * part of connecting to a device that is already paired.
+     */
+    @Nullable
+    public static String getAdbHost(@NonNull Context context) {
+        return get(context).getString(KEY_ADB_HOST, null);
+    }
+
+    public static int getAdbPort(@NonNull Context context) {
+        return get(context).getInt(KEY_ADB_PORT, -1);
+    }
+
+    /** Stores the endpoint a successful connect used, so the next one can try it first. */
+    public static void setAdbEndpoint(@NonNull Context context, @Nullable String host, int port) {
+        if (host == null || port <= 0) return;
+        get(context).edit().putString(KEY_ADB_HOST, host).putInt(KEY_ADB_PORT, port).apply();
+    }
+
+    public static void clearAdbEndpoint(@NonNull Context context) {
+        get(context).edit().remove(KEY_ADB_HOST).remove(KEY_ADB_PORT).apply();
+    }
+
+    /**
+     * True once the app has paired with this device's ADB daemon.
+     *
+     * <p>This is what lets the app stop asking the user to connect again: a paired device keeps
+     * trusting the app's key, so a later failure is a transient transport problem to retry, not a
+     * reason to send the user back to the pairing dialog.
+     */
+    public static boolean isAdbPaired(@NonNull Context context) {
+        return get(context).getBoolean(KEY_ADB_PAIRED, false);
+    }
+
+    public static void setAdbPaired(@NonNull Context context, boolean paired) {
+        get(context).edit().putBoolean(KEY_ADB_PAIRED, paired).apply();
+    }
+
+    /** True once any privileged route (root, Shizuku or ADB) has worked on this device. */
+    public static boolean isPrivilegeGrantedOnce(@NonNull Context context) {
+        return get(context).getBoolean(KEY_PRIVILEGE_GRANTED_ONCE, false);
+    }
+
+    public static void setPrivilegeGrantedOnce(@NonNull Context context, boolean granted) {
+        get(context).edit().putBoolean(KEY_PRIVILEGE_GRANTED_ONCE, granted).apply();
+    }
+
+    /**
+     * True when the user declined Shizuku's permission prompt.
+     *
+     * <p>Remembered so the prompt is not shown again on every screen; the connect screen offers it
+     * explicitly and clears this flag when it succeeds.
+     */
+    public static boolean isShizukuDenied(@NonNull Context context) {
+        return get(context).getBoolean(KEY_SHIZUKU_DENIED, false);
+    }
+
+    public static void setShizukuDenied(@NonNull Context context, boolean denied) {
+        get(context).edit().putBoolean(KEY_SHIZUKU_DENIED, denied).apply();
     }
 }

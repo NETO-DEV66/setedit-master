@@ -1,6 +1,7 @@
 package io.github.netodev66.setedit.adb;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,6 +21,9 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 
 import io.github.netodev66.setedit.R;
+import io.github.netodev66.setedit.data.AppPrefs;
+import io.github.netodev66.setedit.utils.PrivilegedAccess;
+import io.github.netodev66.setedit.utils.ShellExecutor;
 
 /**
  * One-time screen that pairs the app with this device's own ADB over wireless debugging.
@@ -32,6 +36,10 @@ import io.github.netodev66.setedit.R;
  * not have to switch back and forth between the wireless-debugging dialog and this screen.
  */
 public class ConnectActivity extends AppCompatActivity {
+
+    /** Request code for the Shizuku permission prompt, so the answer can be matched. */
+    private static final int REQUEST_SHIZUKU = 4702;
+
     @Nullable
     private LinearProgressIndicator progress;
     @Nullable
@@ -73,6 +81,34 @@ public class ConnectActivity extends AppCompatActivity {
         setStatus(R.string.connect_connecting);
         setBusy(true);
         AdbConnector.runAsync(() -> {
+            // Root or an already-approved Shizuku service means nothing else is needed.
+            if (ShellExecutor.isAvailable()) {
+                runOnUiThread(() -> onConnectResult(AdbConnector.State.CONNECTED, false));
+                return;
+            }
+            // A Shizuku service that has not been approved yet: ask, and use it if granted.
+            if (ShellExecutor.isShizukuBinderAvailable()) {
+                // requestPermission shows a system dialog, so it must run on the main thread.
+                runOnUiThread(() -> {
+                    try {
+                        rikka.shizuku.Shizuku.requestPermission(REQUEST_SHIZUKU);
+                    } catch (Throwable ignored) {
+                    }
+                });
+                for (int i = 0; i < 40 && !ShellExecutor.isShizukuReady(); i++) {
+                    try {
+                        Thread.sleep(250L);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        break;
+                    }
+                }
+                if (ShellExecutor.isShizukuReady()) {
+                    ShellExecutor.grantPrivilegedPermissions(this);
+                    runOnUiThread(() -> onConnectResult(AdbConnector.State.CONNECTED, false));
+                    return;
+                }
+            }
             AdbConnector.State state = AdbConnector.connect(this);
             runOnUiThread(() -> onConnectResult(state, false));
         });
@@ -122,6 +158,8 @@ public class ConnectActivity extends AppCompatActivity {
             setStatus(R.string.connect_connected);
             connectButton.setText(R.string.connected_status);
             connectButton.setEnabled(false);
+            // Everything useful is granted in this one pass, so no later action has to ask again.
+            grantEverything();
             getWindow().getDecorView().postDelayed(() -> {
                 setResult(RESULT_OK);
                 finish();
@@ -143,6 +181,22 @@ public class ConnectActivity extends AppCompatActivity {
             showPairingCode();
             setStatus(R.string.connect_wireless_debugging_off);
         }
+    }
+
+    /**
+     * Grants the whole privileged permission set once the connection is up.
+     *
+     * <p>Shizuku is asked for its permission first, when a service is running, so a device that has
+     * Shizuku does not have to keep the wireless-debugging connection at all. The grant itself runs
+     * shell commands, so it goes to a background thread.
+     */
+    private void grantEverything() {
+        AppPrefs.setShizukuDenied(this, false);
+        if (PrivilegedAccess.isShizukuAvailable() && !ShellExecutor.isShizukuReady()) {
+            rikka.shizuku.Shizuku.requestPermission(REQUEST_SHIZUKU);
+        }
+        Context appContext = getApplicationContext();
+        AdbConnector.runAsync(() -> ShellExecutor.grantPrivilegedPermissions(appContext));
     }
 
     private void setBusy(boolean busy) {

@@ -444,6 +444,9 @@
     <string name="app_result_failed">Could not run: %1$s</string>
     <string name="app_result_failed_plain">The action failed</string>
     <string name="app_needs_privilege">Grant root, Shizuku or wireless debugging first</string>
+    <string name="app_access_denied">SetEdit is not allowed to use Shizuku. Tap Grant in the Shizuku prompt, or open Connect to use wireless debugging.</string>
+    <string name="app_access_offline">Wireless debugging is not reachable right now. Turn it back on, then tap the action again.</string>
+    <string name="app_access_restoring">Restoring privileged access…</string>
     <string name="app_working">Working…</string>
 
     <string name="app_permissions_title">Permissions</string>

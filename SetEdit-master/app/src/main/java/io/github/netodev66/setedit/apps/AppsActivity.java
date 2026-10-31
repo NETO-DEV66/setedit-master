@@ -27,6 +27,7 @@ import java.util.concurrent.Executors;
 import io.github.netodev66.setedit.R;
 import io.github.netodev66.setedit.data.AppListLoader;
 import io.github.netodev66.setedit.data.InstalledApp;
+import io.github.netodev66.setedit.utils.PrivilegedAccess;
 
 /** Lists the apps installed on the device and opens the detail screen for one. */
 public class AppsActivity extends AppCompatActivity implements AppAdapter.Listener {
@@ -162,5 +163,9 @@ public class AppsActivity extends AppCompatActivity implements AppAdapter.Listen
         super.onResume();
         // A detail action can disable, uninstall or freeze an app; refresh the flags on return.
         if (!all.isEmpty()) load();
+        // Warm the privileged route in the background so the first action on a detail screen does
+        // not have to wait for a reconnect.
+        PrivilegedAccess.ensure(this, (ready, reason) -> {
+        });
     }
 }

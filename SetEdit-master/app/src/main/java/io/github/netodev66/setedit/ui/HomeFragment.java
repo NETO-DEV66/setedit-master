@@ -28,6 +28,7 @@ import io.github.netodev66.setedit.R;
 import io.github.netodev66.setedit.TableTypeInt;
 import io.github.netodev66.setedit.data.AppPrefs;
 import io.github.netodev66.setedit.data.TableMeta;
+import io.github.netodev66.setedit.utils.PrivilegedAccess;
 import io.github.netodev66.setedit.utils.ShellExecutor;
 
 /** The dashboard: privileged-access status, the table list and a few quick actions. */
@@ -97,11 +98,23 @@ public class HomeFragment extends Fragment implements TableCardAdapter.Listener,
         )));
 
         view.findViewById(R.id.access_card).setOnClickListener(v -> {
-            if (ShellExecutor.getMode() == ShellExecutor.Mode.NONE && host != null) {
-                host.openConnect();
-            } else if (getActivity() instanceof MainActivity) {
-                ((MainActivity) getActivity()).openTab(R.id.nav_settings);
+            if (PrivilegedAccess.isReady()) {
+                if (getActivity() instanceof MainActivity) {
+                    ((MainActivity) getActivity()).openTab(R.id.nav_settings);
+                }
+                return;
             }
+            // Try to restore access silently first; only send the user to the connect screen when
+            // this device has never had privileged access.
+            MaterialTextView accessTitle = view.findViewById(R.id.access_title);
+            accessTitle.setText(R.string.app_access_restoring);
+            PrivilegedAccess.ensure(requireContext(), (ready, reason) -> {
+                if (!isAdded()) return;
+                refresh();
+                if (!ready && PrivilegedAccess.needsUserSetup(requireContext()) && host != null) {
+                    host.openConnect();
+                }
+            });
         });
 
         refresh();
