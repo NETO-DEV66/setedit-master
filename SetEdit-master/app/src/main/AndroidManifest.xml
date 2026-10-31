@@ -79,6 +79,16 @@
             android:exported="false" />
 
         <activity
+            android:label="@string/app_appops_title"
+            android:name=".apps.AppOpsActivity"
+            android:exported="false" />
+
+        <activity
+            android:label="@string/app_compat_title"
+            android:name=".apps.AppCompatChangesActivity"
+            android:exported="false" />
+
+        <activity
             android:label="@string/update_title"
             android:name=".update.UpdateActivity"
             android:exported="false" />

@@ -25,11 +25,14 @@ public final class AppCommands {
     private static final Pattern PERMISSION = Pattern.compile("[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)*");
     private static final Pattern OP = Pattern.compile("[A-Z0-9_]+");
 
-    /** The modes {@code appops set} accepts. */
-    public static final List<String> OP_MODES = Arrays.asList("allow", "ignore", "deny", "default");
+    /** The modes {@code appops set} accepts. {@code foreground} exists from API 29 on. */
+    public static final List<String> OP_MODES = Arrays.asList(
+            "allow", "ignore", "deny", "default", "foreground");
     /** The standby buckets {@code am set-standby-bucket} accepts. */
     public static final List<String> STANDBY_BUCKETS = Arrays.asList(
             "active", "working_set", "frequent", "rare", "restricted", "never");
+    /** Change ids are the numbers {@code am compat} takes; 0 is never a valid change. */
+    private static final Pattern COMPAT_CHANGE = Pattern.compile("[1-9][0-9]{0,18}");
 
     private AppCommands() {
     }
@@ -48,6 +51,10 @@ public final class AppCommands {
 
     public static boolean isValidOpMode(@Nullable String value) {
         return value != null && OP_MODES.contains(value);
+    }
+
+    public static boolean isValidCompatChange(@Nullable String value) {
+        return value != null && COMPAT_CHANGE.matcher(value).matches();
     }
 
     public static boolean isValidBucket(@Nullable String value) {
@@ -115,9 +122,37 @@ public final class AppCommands {
         return "cmd appops get " + pkg + " " + op;
     }
 
+    /** Reads every op that is set away from its default; one call, so the list screen is fast. */
+    @NonNull
+    public static String appOpGetAll(@NonNull String pkg) {
+        return "cmd appops get " + pkg;
+    }
+
     @NonNull
     public static String appOpSet(@NonNull String pkg, @NonNull String op, @NonNull String mode) {
         return "cmd appops set " + pkg + " " + op + " " + mode;
+    }
+
+    @NonNull
+    public static String appOpReset(@NonNull String pkg) {
+        return "cmd appops reset " + pkg;
+    }
+
+    /** Lists every compat change and which packages override it; the only way to read them back. */
+    @NonNull
+    public static String compatDump() {
+        return "dumpsys platform_compat";
+    }
+
+    @NonNull
+    public static String compatSet(@NonNull String changeId, @NonNull String pkg, boolean enabled) {
+        // --no-kill keeps a toggle from force-stopping the app behind the user's back.
+        return "am compat " + (enabled ? "enable " : "disable ") + "--no-kill " + changeId + " " + pkg;
+    }
+
+    @NonNull
+    public static String compatResetAll(@NonNull String pkg) {
+        return "am compat reset-all --no-kill " + pkg;
     }
 
     @NonNull

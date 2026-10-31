@@ -3,7 +3,10 @@ package io.github.netodev66.setedit.utils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Runs the app-manager actions through the privileged shell.
@@ -91,6 +94,43 @@ public final class AppActions {
             if (AppCommands.OP_MODES.contains(value)) return value;
         }
         return null;
+    }
+
+    /**
+     * Every op whose mode differs from the platform default, in one shell call.
+     *
+     * <p>Only the non-default ops are returned; the caller fills the rest in from the catalogue.
+     * A failure yields an empty map so the screen can still show every op at its default.
+     */
+    @NonNull
+    public static Map<String, String> appOpsSet(@NonNull String pkg) {
+        AppActionResult result = run(AppCommands.appOpGetAll(pkg));
+        if (!result.successful) return Collections.emptyMap();
+        return AppOpCatalog.parseSetOps(result.output);
+    }
+
+    @NonNull
+    public static AppActionResult resetAppOps(@NonNull String pkg) {
+        return run(AppCommands.appOpReset(pkg));
+    }
+
+    /** Reads the per-package compat overrides; an empty list when none are set or unreadable. */
+    @NonNull
+    public static List<CompatChange> compatChanges(@NonNull String pkg) {
+        AppActionResult result = run(AppCommands.compatDump());
+        if (!result.successful) return Collections.emptyList();
+        return CompatChanges.parse(result.output, pkg);
+    }
+
+    @NonNull
+    public static AppActionResult setCompatChange(@NonNull String changeId, @NonNull String pkg,
+                                                  boolean enabled) {
+        return run(AppCommands.compatSet(changeId, pkg, enabled));
+    }
+
+    @NonNull
+    public static AppActionResult resetCompatChanges(@NonNull String pkg) {
+        return run(AppCommands.compatResetAll(pkg));
     }
 
     /** True when the package is in the battery-optimisation exemption list. */

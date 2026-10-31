@@ -47,20 +47,6 @@ public class AppDetailActivity extends AppCompatActivity implements AppActionAda
 
     private static final String EXTRA_PACKAGE = "package";
 
-    /** AppOps that are genuinely useful to toggle and safe to read back. */
-    private static final String[] COMMON_OPS = {
-            "WAKE_LOCK",
-            "RUN_IN_BACKGROUND",
-            "RUN_ANY_IN_BACKGROUND",
-            "START_FOREGROUND",
-            "POST_NOTIFICATION",
-            "VIBRATE",
-            "SYSTEM_ALERT_WINDOW",
-            "GET_USAGE_STATS",
-            "SCHEDULE_EXACT_ALARM",
-            "BOOT_COMPLETED",
-    };
-
     private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor(runnable -> {
         Thread thread = new Thread(runnable, "setedit-app-detail");
         thread.setDaemon(true);
@@ -280,6 +266,9 @@ public class AppDetailActivity extends AppCompatActivity implements AppActionAda
         advanced.add(new AppActionAdapter.Action(R.drawable.ic_apps_tune,
                 getString(R.string.app_action_appops),
                 getString(R.string.app_action_appops_desc), "appops", false));
+        advanced.add(new AppActionAdapter.Action(R.drawable.ic_apps_layers,
+                getString(R.string.app_action_compat),
+                getString(R.string.app_action_compat_desc), "compat", false));
         advanced.add(new AppActionAdapter.Action(R.drawable.ic_apps_battery,
                 getString(R.string.app_action_battery),
                 getString(R.string.app_action_battery_desc), "battery", false));
@@ -324,7 +313,10 @@ public class AppDetailActivity extends AppCompatActivity implements AppActionAda
                 showPermissions();
                 break;
             case "appops":
-                showAppOps();
+                startActivity(AppOpsActivity.intent(this, packageName));
+                break;
+            case "compat":
+                startActivity(AppCompatChangesActivity.intent(this, packageName));
                 break;
             case "battery":
                 confirmBattery();
@@ -495,48 +487,6 @@ public class AppDetailActivity extends AppCompatActivity implements AppActionAda
     private static String shortName(@NonNull String permission) {
         int dot = permission.lastIndexOf('.');
         return dot < 0 ? permission : permission.substring(dot + 1);
-    }
-
-    /** Lists a small set of common AppOps and lets each mode be changed. */
-    private void showAppOps() {
-        String[] labels = new String[COMMON_OPS.length];
-        for (int i = 0; i < COMMON_OPS.length; i++) {
-            labels[i] = COMMON_OPS[i];
-        }
-        new MaterialAlertDialogBuilder(this)
-                .setTitle(R.string.app_appops_title)
-                .setItems(labels, (dialog, which) -> chooseAppOpMode(COMMON_OPS[which]))
-                .setNegativeButton(R.string.cancel, null)
-                .show();
-    }
-
-    private void chooseAppOpMode(@NonNull String op) {
-        if (!AppCommands.isValidOp(op)) return;
-        String[] modes = {
-                getString(R.string.app_appops_allow),
-                getString(R.string.app_appops_ignore),
-                getString(R.string.app_appops_deny),
-                getString(R.string.app_appops_default),
-        };
-        new MaterialAlertDialogBuilder(this)
-                .setTitle(op)
-                .setItems(modes, (dialog, which) -> {
-                    String mode = AppCommands.OP_MODES.get(which);
-                    progress.setVisibility(View.VISIBLE);
-                    EXECUTOR.submit(() -> {
-                        AppActionResult result = AppActions.setAppOp(packageName, op, mode);
-                        runOnUiThread(() -> {
-                            if (isFinishing() || isDestroyed()) return;
-                            progress.setVisibility(View.GONE);
-                            Toast.makeText(this, result.successful
-                                            ? getString(R.string.app_result_done, op)
-                                            : getString(R.string.app_result_failed_plain),
-                                    Toast.LENGTH_SHORT).show();
-                        });
-                    });
-                })
-                .setNegativeButton(R.string.cancel, null)
-                .show();
     }
 
     private void confirmBattery() {

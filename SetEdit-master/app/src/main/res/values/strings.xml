@@ -460,6 +460,28 @@
     <string name="app_appops_ignore">Ignore</string>
     <string name="app_appops_deny">Deny</string>
     <string name="app_appops_default">Default</string>
+    <string name="app_appops_foreground">Allow in foreground</string>
+    <string name="app_appops_subtitle">Per-app operation modes</string>
+
+    <string name="app_ops_search_hint">Search operations</string>
+    <string name="app_ops_changed_only">Changed only</string>
+    <string name="app_ops_count">%1$d shown</string>
+    <string name="app_ops_default_line">Default: %1$s</string>
+    <string name="app_ops_reset_all">Reset all</string>
+    <string name="app_ops_reset_body">Every operation for this app goes back to its platform default. This is the clean way to undo a bad setting.</string>
+    <string name="app_ops_reset_done">Operations reset</string>
+    <string name="app_ops_empty">No operation matches.</string>
+    <string name="app_ops_empty_none">This app has no operations at all.</string>
+
+    <string name="app_action_compat">App compat</string>
+    <string name="app_action_compat_desc">Android behaviour changes for this app</string>
+    <string name="app_compat_title">App compat</string>
+    <string name="app_compat_subtitle">Behaviour overrides</string>
+    <string name="app_compat_change_id">Change %1$s</string>
+    <string name="app_compat_reset_all">Reset all</string>
+    <string name="app_compat_reset_body">Every behaviour override for this app is cleared, so Android uses its normal rules again.</string>
+    <string name="app_compat_reset_done">Compat overrides cleared</string>
+    <string name="app_compat_empty">This app carries no behaviour overrides.</string>
 
     <string name="app_bucket_title">Standby bucket</string>
     <string name="app_bucket_active">Active</string>
