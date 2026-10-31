@@ -19,7 +19,7 @@ public final class AppActions {
 
     @NonNull
     private static AppActionResult run(@NonNull String command) {
-        return AppActionResult.of(ShellExecutor.exec(command));
+        return AppActionResult.of(ShellExecutor.execWithRetry(command));
     }
 
     @NonNull

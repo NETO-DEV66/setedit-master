@@ -1,0 +1,20 @@
+Privileged access is now granted once and remembered.
+
+* Connect once, stay connected. After a single wireless-debugging (or
+  Shizuku, or root) connection, SetEdit grants itself every permission it
+  needs and never asks you to connect again. The remembered ADB endpoint
+  is reused, so reconnects skip the slow mDNS discovery that used to time
+  out and send you back to the pairing dialog.
+* No more repeated prompts in the Apps screen. Tapping any action used to
+  show "grant privileged access first"; now the app silently restores
+  access — root, a Shizuku grant, or a reconnect — and only opens the
+  connect screen when the device has genuinely never had access.
+* Shizuku is actually requested. The app previously only checked whether
+  Shizuku was already approved, so a device running Shizuku still asked
+  for wireless debugging. It now asks Shizuku for permission directly.
+* One grant covers everything. A single connection grants
+  WRITE_SECURE_SETTINGS, WRITE_SETTINGS and usage access, and sets the
+  matching AppOps, so settings edits and the Apps Manager work without the
+  connection.
+* Survives a WiFi drop. A failed command reconnects from the remembered
+  endpoint and retries once, instead of failing until you reconnect by hand.

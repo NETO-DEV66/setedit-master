@@ -14,7 +14,6 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import io.github.netodev66.setedit.adb.AdbConnector;
 import io.github.netodev66.setedit.adb.ConnectActivity;
 import io.github.netodev66.setedit.data.AppPrefs;
 import io.github.netodev66.setedit.ui.BackupFragment;
@@ -27,6 +26,7 @@ import io.github.netodev66.setedit.ui.Tables;
 import io.github.netodev66.setedit.update.UpdateActivity;
 import io.github.netodev66.setedit.update.UpdateInfo;
 import io.github.netodev66.setedit.update.UpdateManager;
+import io.github.netodev66.setedit.utils.PrivilegedAccess;
 import io.github.netodev66.setedit.utils.ShellExecutor;
 import io.github.netodev66.util.UiUtils;
 
@@ -169,11 +169,19 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.Host
         startActivity(new Intent(this, ConnectActivity.class));
     }
 
-    /** Silently reconnects wireless debugging in the background when it was set up before. */
+    /**
+     * Restores privileged access in the background when this device has used it before.
+     *
+     * <p>Root and an approved Shizuku service are picked up straight away; a device that paired over
+     * wireless debugging is reconnected from its remembered endpoint. Nothing is shown to the user:
+     * this only makes the next action work without a reconnect prompt.
+     */
     private void maybeReconnect() {
         if (!AppPrefs.isAutoReconnect(this)) return;
-        if (ShellExecutor.isAvailable()) return;
-        AdbConnector.runAsync(() -> AdbConnector.connect(getApplicationContext()));
+        if (PrivilegedAccess.isReady()) return;
+        PrivilegedAccess.ensure(this, (ready, reason) -> {
+            // Silent: the access card on Home reflects the outcome on its next refresh.
+        });
     }
 
     @Override
