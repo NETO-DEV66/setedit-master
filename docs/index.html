@@ -171,48 +171,48 @@
   <h1>SetEdit</h1>
   <p class="tagline">View and edit Android system settings directly — with a fresh Material 3 look.</p>
   <div class="cta">
-    <a class="btn primary" href="https://github.com/NETO-DEV66/setedit-master/releases/latest/download/SetEdit-4.4-release.apk">
+    <a class="btn primary" href="https://github.com/NETO-DEV66/setedit-master/releases/latest/download/SetEdit-4.5-release.apk">
       Download APK
     </a>
     <a class="btn tonal" href="https://github.com/NETO-DEV66/setedit-master">View on GitHub</a>
   </div>
-  <p class="meta">v4.4 · Android 7.0+ · Signed release · ~2.0 MB</p>
+  <p class="meta">v4.5 · Android 7.0+ · Signed release · ~2.0 MB</p>
 </header>
 
 <main class="wrap">
 
   <section>
-    <h2>What's new in v4.4</h2>
+    <h2>What's new in v4.5</h2>
     <div class="grid">
       <div class="card">
-        <div class="chip">📱</div>
-        <h3>Apps Manager</h3>
-        <p>A new Apps screen lists everything installed — icon, package, size and a System badge — with search and user/system filters.</p>
+        <div class="chip">🔓</div>
+        <h3>Connect once, stay connected</h3>
+        <p>SetEdit grants every permission it needs after a single connection and remembers it, so a paired device stops asking you to connect again.</p>
       </div>
       <div class="card">
-        <div class="chip">🛠️</div>
-        <h3>Per-app actions</h3>
-        <p>Open, force stop, clear cache or data, disable, uninstall, or freeze an app without losing its data.</p>
+        <div class="chip">🐚</div>
+        <h3>Shizuku is asked properly</h3>
+        <p>The app used to only check whether Shizuku was already approved. It now requests permission directly and waits for your answer.</p>
       </div>
       <div class="card">
-        <div class="chip">🔑</div>
-        <h3>Permissions, in one list</h3>
-        <p>See every runtime permission an app asks for and grant or revoke any of them in a tap.</p>
+        <div class="chip">📌</div>
+        <h3>The ADB endpoint is remembered</h3>
+        <p>The host and port of the last successful connect are saved and tried first, so a paired device reconnects with one handshake instead of a three-second discovery timeout.</p>
       </div>
       <div class="card">
-        <div class="chip">🎚️</div>
-        <h3>AppOps switches</h3>
-        <p>Flip hidden switches such as WAKE_LOCK, RUN_IN_BACKGROUND, POST_NOTIFICATION and SCHEDULE_EXACT_ALARM.</p>
+        <div class="chip">♻️</div>
+        <h3>Failed actions reconnect</h3>
+        <p>Tapping an action no longer just shows a warning. Access is restored silently — root, Shizuku, or a reconnect — and the action is retried once.</p>
       </div>
       <div class="card">
-        <div class="chip">🔋</div>
-        <h3>Battery and standby</h3>
-        <p>Exempt an app from battery optimisation, or move it between the Active, Frequent, Rare and Restricted buckets.</p>
+        <div class="chip">🧾</div>
+        <h3>One grant covers everything</h3>
+        <p>A single connect grants secure settings, system settings and usage access, and sets the matching AppOps, so edits and the Apps Manager keep working.</p>
       </div>
       <div class="card">
-        <div class="chip">🛡️</div>
-        <h3>Safe by design</h3>
-        <p>Destructive actions ask first, and every shell command is validated so a bad package name can never run anything unexpected.</p>
+        <div class="chip">🧪</div>
+        <h3>Tested</h3>
+        <p>Six new unit tests cover endpoint persistence and the granted flags, bringing the suite to 51.</p>
       </div>
     </div>
   </section>
@@ -275,8 +275,8 @@
     <h2>Install</h2>
     <p>Download the APK and open it on your device. You may need to allow installs from your browser or file manager.</p>
     <pre><code># Verify the download
-sha256sum SetEdit-4.4-release.apk
-# bb98d851a713b55d4c62dfd655642b3bb2ee7f2f0088ab64e64f79d43cc54555</code></pre>
+sha256sum SetEdit-4.5-release.apk
+# b636f2bb01b2831c6024580e658354dffad256812ac34e349cfeb0100b41c8ed</code></pre>
     <p>On Android 15, 16 and 17, start <a href="https://shizuku.rikka.app/">Shizuku</a> (or use root) and grant privileged access from SetEdit's overflow menu so every table stays editable.</p>
   </section>
 

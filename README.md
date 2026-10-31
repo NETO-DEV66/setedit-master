@@ -15,7 +15,7 @@ A modern, Material 3 Settings Database Editor for Android.
 [![License](https://img.shields.io/badge/license-GPLv3-5B4CDB)](LICENSE)
 [![Website](https://img.shields.io/badge/website-live-5B4CDB)](https://neto-dev66.github.io/setedit-master/)
 
-[**Download APK**](https://github.com/NETO-DEV66/setedit-master/releases/latest/download/SetEdit-4.4-release.apk) ·
+[**Download APK**](https://github.com/NETO-DEV66/setedit-master/releases/latest/download/SetEdit-4.5-release.apk) ·
 [**Website**](https://neto-dev66.github.io/setedit-master/) ·
 [**Releases**](https://github.com/NETO-DEV66/setedit-master/releases) ·
 [**Report a bug**](https://github.com/NETO-DEV66/setedit-master/issues)
@@ -66,20 +66,20 @@ settings`. Edit any row by name or value, or add a new one.
 
 Grab the latest signed APK:
 
-**[⬇ SetEdit-4.4-release.apk](https://github.com/NETO-DEV66/setedit-master/releases/latest/download/SetEdit-4.4-release.apk)** (~2.0 MB)
+**[⬇ SetEdit-4.5-release.apk](https://github.com/NETO-DEV66/setedit-master/releases/latest/download/SetEdit-4.5-release.apk)** (~2.0 MB)
 
 | | |
 |---|---|
 | Package | `io.github.netodev66.setedit` |
-|  Version | 4.4 (versionCode 24) |
+|  Version | 4.5 (versionCode 25) |
 | Requires | Android 7.0 (API 24) or newer |
 | Size | ~2.0 MB |
 
 Verify the download:
 
 ```shell
-sha256sum SetEdit-4.4-release.apk
-# bb98d851a713b55d4c62dfd655642b3bb2ee7f2f0088ab64e64f79d43cc54555
+sha256sum SetEdit-4.5-release.apk
+# b636f2bb01b2831c6024580e658354dffad256812ac34e349cfeb0100b41c8ed
 ```
 
 ## Permissions
