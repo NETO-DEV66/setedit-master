@@ -90,6 +90,8 @@ public class HomeFragment extends Fragment implements TableCardAdapter.Listener,
                         R.string.home_action_backup, R.string.home_action_backup_desc, "backup"),
                 new QuickActionAdapter.Action(R.drawable.ic_nav_favorite,
                         R.string.home_action_favorites, R.string.home_action_favorites_desc, "favorites"),
+                new QuickActionAdapter.Action(R.drawable.ic_apps,
+                        R.string.home_action_apps, R.string.home_action_apps_desc, "apps"),
                 new QuickActionAdapter.Action(R.drawable.ic_update,
                         R.string.update_row, R.string.update_row_desc, "update")
         )));
@@ -188,6 +190,9 @@ public class HomeFragment extends Fragment implements TableCardAdapter.Listener,
                 break;
             case "favorites":
                 host.openTab(R.id.nav_favorites);
+                break;
+            case "apps":
+                startActivity(io.github.netodev66.setedit.apps.AppsActivity.intent(requireContext()));
                 break;
             case "update":
                 startActivity(io.github.netodev66.setedit.update.UpdateActivity.intent(requireContext()));

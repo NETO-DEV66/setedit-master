@@ -375,4 +375,99 @@
     <string name="sheet_step_up_symbol" translatable="false">+</string>
     <string name="sheet_step_down_10_symbol" translatable="false">−10</string>
     <string name="sheet_step_up_10_symbol" translatable="false">+10</string>
+
+    <!-- App manager -->
+    <string name="apps_title">Apps</string>
+    <string name="apps_subtitle">Manage the apps installed on this device</string>
+    <string name="apps_search_hint">Search apps…</string>
+    <string name="apps_filter_all">All</string>
+    <string name="apps_filter_user">User</string>
+    <string name="apps_filter_system">System</string>
+    <string name="apps_empty">No apps match “%1$s”</string>
+    <string name="apps_count">%1$d apps</string>
+    <string name="apps_system_badge">System</string>
+    <string name="apps_disabled_badge">Disabled</string>
+    <string name="apps_suspended_badge">Frozen</string>
+    <string name="home_action_apps">Apps</string>
+    <string name="home_action_apps_desc">Manage installed apps</string>
+
+    <string name="app_section_info">Details</string>
+    <string name="app_section_actions">Actions</string>
+    <string name="app_section_advanced">Advanced</string>
+    <string name="app_label_package">Package</string>
+    <string name="app_label_version">Version</string>
+    <string name="app_label_size">Size</string>
+    <string name="app_label_installer">Installer</string>
+    <string name="app_label_updated">Updated</string>
+    <string name="app_label_kind">Type</string>
+    <string name="app_kind_system">System app</string>
+    <string name="app_kind_user">User app</string>
+    <string name="app_state_enabled">Enabled</string>
+    <string name="app_status_line">%1$s · %2$s</string>
+    <string name="app_none">—</string>
+
+    <string name="app_action_open">Open app</string>
+    <string name="app_action_open_desc">Launch this app</string>
+    <string name="app_action_force_stop">Force stop</string>
+    <string name="app_action_force_stop_desc">Stop the app immediately</string>
+    <string name="app_action_info">App info</string>
+    <string name="app_action_info_desc">Open the system app-details page</string>
+    <string name="app_action_clear_cache">Clear cache</string>
+    <string name="app_action_clear_cache_desc">Delete cached files, keep your data</string>
+    <string name="app_action_clear_data">Clear data</string>
+    <string name="app_action_clear_data_desc">Delete all app data. This cannot be undone.</string>
+    <string name="app_action_disable">Disable</string>
+    <string name="app_action_disable_desc">Turn the app off until you enable it again</string>
+    <string name="app_action_enable">Enable</string>
+    <string name="app_action_enable_desc">Turn the app back on</string>
+    <string name="app_action_suspend">Freeze</string>
+    <string name="app_action_suspend_desc">Suspend the app; its data is kept</string>
+    <string name="app_action_unsuspend">Unfreeze</string>
+    <string name="app_action_unsuspend_desc">Resume the frozen app</string>
+    <string name="app_action_uninstall">Uninstall</string>
+    <string name="app_action_uninstall_desc">Remove this app from the device</string>
+    <string name="app_action_uninstall_user">Remove for this user</string>
+    <string name="app_action_uninstall_user_desc">Remove a system app for the current user only</string>
+    <string name="app_action_permissions">Permissions</string>
+    <string name="app_action_permissions_desc">Grant or revoke a runtime permission</string>
+    <string name="app_action_appops">AppOps</string>
+    <string name="app_action_appops_desc">Background, wake lock and other hidden switches</string>
+    <string name="app_action_battery">Battery optimisation</string>
+    <string name="app_action_battery_desc">Exempt the app from battery optimisation</string>
+    <string name="app_action_bucket">Standby bucket</string>
+    <string name="app_action_bucket_desc">How aggressively Android restricts the app</string>
+
+    <string name="app_confirm_title">Confirm</string>
+    <string name="app_confirm_body">%1$s\n\n%2$s</string>
+    <string name="app_warning_irreversible">This cannot be undone.</string>
+    <string name="app_result_done">%1$s done</string>
+    <string name="app_result_failed">Could not run: %1$s</string>
+    <string name="app_result_failed_plain">The action failed</string>
+    <string name="app_needs_privilege">Grant root, Shizuku or wireless debugging first</string>
+    <string name="app_working">Working…</string>
+
+    <string name="app_permissions_title">Permissions</string>
+    <string name="app_permissions_empty">This app declares no runtime permissions.</string>
+    <string name="app_permission_granted">Granted</string>
+    <string name="app_permission_denied">Not granted</string>
+
+    <string name="app_appops_title">AppOps</string>
+    <string name="app_appops_mode">Mode</string>
+    <string name="app_appops_allow">Allow</string>
+    <string name="app_appops_ignore">Ignore</string>
+    <string name="app_appops_deny">Deny</string>
+    <string name="app_appops_default">Default</string>
+
+    <string name="app_bucket_title">Standby bucket</string>
+    <string name="app_bucket_active">Active</string>
+    <string name="app_bucket_working_set">Working set</string>
+    <string name="app_bucket_frequent">Frequent</string>
+    <string name="app_bucket_rare">Rare</string>
+    <string name="app_bucket_restricted">Restricted</string>
+    <string name="app_bucket_never">Never</string>
+
+    <string name="app_battery_title">Battery optimisation</string>
+    <string name="app_battery_body">Exempt this app from battery optimisation so it can run in the background?</string>
+    <string name="app_battery_exempt">Exempt</string>
+    <string name="app_battery_restore">Restore</string>
 </resources>

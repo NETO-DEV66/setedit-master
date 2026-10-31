@@ -1,0 +1,19 @@
+The Apps Manager — manage the other apps on your phone, all in one place.
+
+* A new Apps screen. Browse every app installed on the device, with its
+  icon, package name, size and a System badge. Search by name or package,
+  and filter to user or system apps.
+* Per-app actions. Open an app, force stop it, jump to its system info
+  page, clear its cache, or clear all its data. Disable or enable it, and
+  uninstall it. System apps are removed for the current user only, so the
+  APK stays safe in /system.
+* Freeze and unfreeze. Suspend an app so it stops running in the
+  background without losing its data.
+* Permissions, in one list. See the runtime permissions an app asks for
+  and grant or revoke any of them.
+* AppOps switches. Flip hidden switches such as WAKE_LOCK,
+  RUN_IN_BACKGROUND, POST_NOTIFICATION and SCHEDULE_EXACT_ALARM.
+* Battery and standby. Exempt an app from battery optimisation, or move
+  it between the Active, Frequent, Rare and Restricted standby buckets.
+* Safe by design. Destructive actions ask first, and every shell command
+  is validated so a bad package name can never run anything unexpected.

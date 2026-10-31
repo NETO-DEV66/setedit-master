@@ -25,6 +25,10 @@
     <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
     <!-- The in-app updater downloads the next APK and hands it to the package installer. -->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <!-- The app manager lists every installed package, including those without a launcher icon. -->
+    <uses-permission
+        android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" />
 
     <uses-feature
         android:name="android.software.leanback"
@@ -62,6 +66,16 @@
         <activity
             android:label="@string/history_title"
             android:name=".HistoryActivity"
+            android:exported="false" />
+
+        <activity
+            android:label="@string/apps_title"
+            android:name=".apps.AppsActivity"
+            android:exported="false" />
+
+        <activity
+            android:label="@string/apps_title"
+            android:name=".apps.AppDetailActivity"
             android:exported="false" />
 
         <activity
